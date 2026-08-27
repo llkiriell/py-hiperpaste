@@ -1,7 +1,5 @@
 """Icono de bandeja: activar/desactivar, configuracion y salida."""
 
-import subprocess
-
 import pystray
 import win32api
 import win32event
@@ -9,12 +7,9 @@ import winerror
 from PIL import Image
 
 from . import APP_NAME, __version__, config, registry
-from .resources import asset_path, executable_path, launch_args
+from .resources import asset_path, spawn
 
 _MUTEX_NAME = r"Global\HiperpasteTrayMutex"
-
-# Evita el destello de consola al relanzarse desde el codigo fuente.
-_NO_WINDOW = 0x08000000
 
 
 def _single_instance_handle():
@@ -31,11 +26,6 @@ def _load_icon(name: str) -> Image.Image:
     except Exception:
         # Cuadro liso de emergencia si faltan los recursos.
         return Image.new("RGBA", (64, 64), (37, 99, 235, 255))
-
-
-def _spawn(*args) -> None:
-    command = [executable_path()] + launch_args() + list(args)
-    subprocess.Popen(command, creationflags=_NO_WINDOW, close_fds=True)
 
 
 class Tray:
@@ -93,9 +83,7 @@ class Tray:
         self._refresh()
 
     def _open_settings(self, _icon=None, _item=None) -> None:
-        # pystray ocupa el hilo principal con su propio bucle de eventos y
-        # tkinter exige ese mismo hilo, asi que la ventana va en otro proceso.
-        _spawn("--config")
+        spawn("--config")
 
     def _quit(self, _icon=None, _item=None) -> None:
         self.icon.stop()
@@ -125,7 +113,7 @@ def run_tray() -> int:
     handle = _single_instance_handle()
     if handle is None:
         # Ya hay una bandeja activa; mostramos su configuracion y salimos.
-        _spawn("--config")
+        spawn("--config")
         return 0
 
     # Repara la entrada del menu si la aplicacion cambio de ubicacion, y la

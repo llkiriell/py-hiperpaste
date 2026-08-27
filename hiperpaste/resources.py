@@ -1,7 +1,11 @@
 """Localizacion de recursos, valida tanto en fuente como empaquetado."""
 
 import os
+import subprocess
 import sys
+
+# Evita el destello de consola al relanzar la aplicacion desde el codigo fuente.
+_NO_WINDOW = 0x08000000
 
 
 def base_dir() -> str:
@@ -37,3 +41,14 @@ def launch_args() -> list:
     if getattr(sys, "frozen", False):
         return []
     return [os.path.join(base_dir(), "main.py")]
+
+
+def spawn(*args) -> None:
+    """Relanza la aplicacion en un proceso aparte con los argumentos dados.
+
+    pystray ocupa el hilo principal con su bucle de eventos y tkinter exige
+    ese mismo hilo, asi que cada ventana abierta desde la bandeja vive en su
+    propio proceso.
+    """
+    command = [executable_path()] + launch_args() + [str(arg) for arg in args]
+    subprocess.Popen(command, creationflags=_NO_WINDOW, close_fds=True)
