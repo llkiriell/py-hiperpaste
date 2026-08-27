@@ -6,7 +6,7 @@ import win32event
 import winerror
 from PIL import Image
 
-from . import APP_NAME, __version__, config, i18n, registry
+from . import APP_NAME, __version__, config, i18n, registry, updates
 from .i18n import t
 from .resources import asset_path, spawn
 
@@ -93,6 +93,13 @@ class Tray:
     def _open_settings(self, _icon=None, _item=None) -> None:
         spawn("--config")
 
+    def _open_about(self, _icon=None, _item=None) -> None:
+        spawn("--about")
+
+    def _check_updates(self, _icon=None, _item=None) -> None:
+        # La comprobacion vive en la ventana Acerca de, que ya la muestra.
+        spawn("--about")
+
     def _quit(self, _icon=None, _item=None) -> None:
         self.icon.stop()
 
@@ -109,6 +116,13 @@ class Tray:
             pystray.MenuItem(
                 t("tray.startup"), self._toggle_startup, checked=self._is_startup,
             ),
+            pystray.Menu.SEPARATOR,
+            # Visible siempre; pulsable solo cuando haya releases publicadas.
+            pystray.MenuItem(
+                t("tray.check_updates"), self._check_updates,
+                enabled=updates.ENABLED,
+            ),
+            pystray.MenuItem(t("tray.about", app=APP_NAME), self._open_about),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem(t("tray.quit"), self._quit),
         )

@@ -1,7 +1,7 @@
 """Despacho de la linea de comandos.
 
 Un unico ejecutable cubre todos los roles: bandeja, pegado desde el menu
-contextual, ventana de configuracion y alta/baja en el registro.
+contextual, ventana de configuracion, Acerca de y alta/baja en el registro.
 """
 
 import sys
@@ -40,6 +40,11 @@ def main(argv=None) -> int:
     if command in ("--config", "-c"):
         from .ui.settings import open_settings
         open_settings()
+        return 0
+
+    if command in ("--about", "-a"):
+        from .ui.about import open_about
+        open_about()
         return 0
 
     if command == "--register":

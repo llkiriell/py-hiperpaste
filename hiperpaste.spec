@@ -7,6 +7,8 @@ from PyInstaller.utils.hooks import collect_data_files
 # el ejecutable falla al arrancar.
 datas = collect_data_files("customtkinter")
 datas += [("assets/icon.ico", "assets"), ("assets/icon_off.ico", "assets")]
+# icon.png lo muestra la ventana Acerca de; tkinter no dibuja un .ico ahi.
+datas += [("assets/icon.png", "assets")]
 
 # Los idiomas se leen de disco en tiempo de ejecucion: sin incluirlos aqui el
 # ejecutable solo entiende las claves, no los textos.

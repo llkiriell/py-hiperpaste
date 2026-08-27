@@ -173,8 +173,11 @@ def open_settings() -> None:
     footer = ctk.CTkFrame(window, fg_color="transparent")
     footer.pack(fill="x", padx=theme.PAD, pady=(0, theme.PAD))
 
-    ctk.CTkLabel(
-        footer, text=f"v{__version__}", font=ctk.CTkFont(size=11), text_color=_MUTED,
+    ctk.CTkButton(
+        footer, text=f'{t("settings.about")}  v{__version__}',
+        command=lambda: spawn("--about"),
+        fg_color="transparent", hover=False, width=0, anchor="w",
+        font=ctk.CTkFont(size=11), text_color=_MUTED,
     ).pack(side="left")
 
     def cancel():

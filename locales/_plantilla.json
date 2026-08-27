@@ -96,6 +96,6 @@
   "paste.unexpected_error": "Error inesperado al pegar.\n\n{error}",
 
   "__seccion_cli__": "Linea de comandos",
-  "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
+  "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --about         Muestra la ventana Acerca de\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
   "cli.unknown_option": "Opcion desconocida: {command}"
 }
