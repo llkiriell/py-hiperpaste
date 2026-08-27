@@ -1,0 +1,8 @@
+# Ejecucion
+pillow>=11.0
+pywin32>=306
+customtkinter>=5.2.2
+pystray>=0.19.5
+
+# Solo para generar el ejecutable y el instalador
+pyinstaller>=6.10

@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+build/
+dist/
+installer/Output/
+installer/version.iss
+*.spec.bak
+.venv/
+*.egg-info/
+.vscode/
+.idea/
+*.log
