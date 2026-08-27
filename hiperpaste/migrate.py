@@ -11,7 +11,7 @@ import json
 import os
 import winreg
 
-from . import config, registry
+from . import APP_NAME, config, registry
 
 _OLD_NAME = "Hiperpegado"
 _OLD_MENU_KEY = r"Software\Classes\Directory\Background\shell" + "\\" + _OLD_NAME
@@ -64,7 +64,16 @@ def _inherit_config(cfg: dict) -> dict:
             previo = json.load(fh)
     except (OSError, ValueError):
         return cfg
-    return dict(previo) if isinstance(previo, dict) else cfg
+    if not isinstance(previo, dict):
+        return cfg
+
+    heredado = dict(previo)
+    # El sufijo del nombre valia "Hiperpegado" por defecto. Copiarlo tal cual
+    # dejaria los archivos nuevos con el nombre viejo, asi que solo se conserva
+    # cuando el usuario lo habia cambiado a proposito.
+    if str(heredado.get("name_prefix", "")).strip() == _OLD_NAME:
+        heredado["name_prefix"] = APP_NAME
+    return heredado
 
 
 def run() -> None:
