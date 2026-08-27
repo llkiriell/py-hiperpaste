@@ -12,6 +12,7 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, "dist", "Hiperpaste")
 ISS = os.path.join(ROOT, "installer", "hiperpaste.iss")
+VERSION_ISS = os.path.join(ROOT, "installer", "version.iss")
 
 # winget instala Inno Setup en %LOCALAPPDATA%\Programs; el instalador
 # oficial lo pone en Archivos de programa. Hay que contemplar ambos.
@@ -40,6 +41,25 @@ def find_iscc() -> str:
     return shutil.which("ISCC") or ""
 
 
+def app_version() -> str:
+    """Version declarada en el paquete, unica fuente de verdad."""
+    sys.path.insert(0, ROOT)
+    from hiperpaste import __version__
+    return __version__
+
+
+def write_version_iss() -> None:
+    """Vuelca la version a un include para Inno Setup.
+
+    Antes el .iss la repetia a mano y habia que acordarse de sincronizarla.
+    """
+    version = app_version()
+    with open(VERSION_ISS, "w", encoding="utf-8") as fh:
+        fh.write("; Generado por build.py. No editar: se sobrescribe.\n")
+        fh.write(f'#define AppVersion "{version}"\n')
+    print(f"  Version {version}")
+
+
 def main() -> int:
     step("Iconos")
     run([sys.executable, os.path.join("tools", "make_icon.py")])
@@ -60,6 +80,7 @@ def main() -> int:
         return 0
 
     step("Instalador (Inno Setup)")
+    write_version_iss()
     iscc = find_iscc()
     if not iscc:
         print("  Inno Setup 6 no esta instalado; se omite el instalador.")

@@ -56,8 +56,19 @@ def dim(image: Image.Image) -> Image.Image:
     return grey
 
 
+GENERATED = ("icon.ico", "icon_off.ico", "icon.png")
+
+
 def main() -> int:
     os.makedirs(ASSETS, exist_ok=True)
+
+    # Sin esto, cada compilacion sobrescribia un icono propio puesto a mano.
+    # Para regenerarlos, borralos o pasa --force.
+    rutas = [os.path.join(ASSETS, nombre) for nombre in GENERATED]
+    if "--force" not in sys.argv and all(os.path.exists(r) for r in rutas):
+        print(f"Iconos ya presentes en {ASSETS}; se conservan (--force para rehacerlos)")
+        return 0
+
     icon = draw_icon()
     to_ico(icon, os.path.join(ASSETS, "icon.ico"))
     to_ico(dim(icon), os.path.join(ASSETS, "icon_off.ico"))

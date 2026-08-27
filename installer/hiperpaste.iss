@@ -2,7 +2,8 @@
 ; Compilar con: ISCC.exe installer\hiperpaste.iss   (o python build.py)
 
 #define AppName      "Hiperpaste"
-#define AppVersion   "1.0.0"
+; La version la genera build.py a partir de hiperpaste/__init__.py.
+#include "version.iss"
 #define AppPublisher "Hiperpaste"
 #define AppExe       "Hiperpaste.exe"
 
