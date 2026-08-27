@@ -1,4 +1,4 @@
-"""Ventana de configuracion de Hiperpegado."""
+"""Ventana de configuracion de Hiperpaste."""
 
 import customtkinter as ctk
 
@@ -116,7 +116,7 @@ def open_settings() -> None:
     startup.pack(side="right")
 
     row = _row(general)
-    _label(row, "Hiperpegado activado")
+    _label(row, "Hiperpaste activado")
     enabled = ctk.CTkSwitch(row, text="")
     enabled.select() if cfg["enabled"] else enabled.deselect()
     enabled.pack(side="right")

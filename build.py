@@ -1,4 +1,4 @@
-"""Genera el ejecutable y el instalador de Hiperpegado.
+"""Genera el ejecutable y el instalador de Hiperpaste.
 
     python build.py            iconos + ejecutable + instalador
     python build.py --no-installer   se detiene tras el ejecutable
@@ -10,8 +10,8 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-DIST = os.path.join(ROOT, "dist", "Hiperpegado")
-ISS = os.path.join(ROOT, "installer", "hiperpegado.iss")
+DIST = os.path.join(ROOT, "dist", "Hiperpaste")
+ISS = os.path.join(ROOT, "installer", "hiperpaste.iss")
 
 # winget instala Inno Setup en %LOCALAPPDATA%\Programs; el instalador
 # oficial lo pone en Archivos de programa. Hay que contemplar ambos.
@@ -49,9 +49,9 @@ def main() -> int:
     if os.path.isdir(DIST):
         shutil.rmtree(DIST, ignore_errors=True)
     run([sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
-         "hiperpegado.spec"])
+         "hiperpaste.spec"])
 
-    exe = os.path.join(DIST, "Hiperpegado.exe")
+    exe = os.path.join(DIST, "Hiperpaste.exe")
     if not os.path.exists(exe):
         sys.exit(f"\nNo se genero {exe}")
     print(f"\n  Listo: {exe}")

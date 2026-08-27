@@ -1,4 +1,4 @@
-"""Configuracion persistente en %APPDATA%\Hiperpegado\config.json."""
+"""Configuracion persistente en %APPDATA%\Hiperpaste\config.json."""
 
 import json
 import os

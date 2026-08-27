@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""Empaquetado de Hiperpegado (PyInstaller, modo onedir)."""
+"""Empaquetado de Hiperpaste (PyInstaller, modo onedir)."""
 
 from PyInstaller.utils.hooks import collect_data_files
 
@@ -35,7 +35,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="Hiperpegado",
+    name="Hiperpaste",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -56,5 +56,5 @@ coll = COLLECT(
     upx_exclude=[],
     # onedir y no onefile: onefile descomprime a %TEMP% en cada invocacion,
     # anadiendo cerca de un segundo de latencia a cada pegado.
-    name="Hiperpegado",
+    name="Hiperpaste",
 )

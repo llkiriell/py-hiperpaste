@@ -10,10 +10,10 @@ from .resources import executable_path, launch_args
 
 # Menu contextual del fondo de carpeta: el clic derecho sobre el espacio
 # vacio de una carpeta abierta.
-_MENU_KEY = r"Software\Classes\Directory\Background\shell\Hiperpegado"
+_MENU_KEY = r"Software\Classes\Directory\Background\shell\Hiperpaste"
 _COMMAND_KEY = _MENU_KEY + r"\command"
 _RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-_MENU_LABEL = "Hiperpegado"
+_MENU_LABEL = APP_NAME
 
 
 def _quoted_launcher() -> str:

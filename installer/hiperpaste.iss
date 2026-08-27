@@ -1,13 +1,13 @@
-; Instalador de Hiperpegado (Inno Setup 6)
-; Compilar con: ISCC.exe installer\hiperpegado.iss   (o python build.py)
+; Instalador de Hiperpaste (Inno Setup 6)
+; Compilar con: ISCC.exe installer\hiperpaste.iss   (o python build.py)
 
-#define AppName      "Hiperpegado"
+#define AppName      "Hiperpaste"
 #define AppVersion   "1.0.0"
-#define AppPublisher "Hiperpegado"
-#define AppExe       "Hiperpegado.exe"
+#define AppPublisher "Hiperpaste"
+#define AppExe       "Hiperpaste.exe"
 
 [Setup]
-AppId={{9C4F1A2E-6B7D-4E58-9A31-0F2D5C8E7B44}
+AppId={{5E1F432E-60F4-4F73-BCAE-4ACC917F97F6}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
@@ -42,7 +42,7 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "startupicon"; Description: "Iniciar {#AppName} con Windows"; GroupDescription: "Opciones:"
 
 [Files]
-Source: "..\dist\Hiperpegado\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\Hiperpaste\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"

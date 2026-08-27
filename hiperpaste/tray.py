@@ -11,7 +11,7 @@ from PIL import Image
 from . import APP_NAME, __version__, config, registry
 from .resources import asset_path, executable_path, launch_args
 
-_MUTEX_NAME = "Global\HiperpegadoTrayMutex"
+_MUTEX_NAME = r"Global\HiperpasteTrayMutex"
 
 # Evita el destello de consola al relanzarse desde el codigo fuente.
 _NO_WINDOW = 0x08000000

@@ -74,7 +74,7 @@ def paste_into(folder: str) -> None:
 
     if not cfg["enabled"]:
         notify.info(
-            "Hiperpegado esta desactivado.\n\n"
+            "Hiperpaste esta desactivado.\n\n"
             "Activalo desde su icono en la bandeja del sistema."
         )
         return
@@ -103,7 +103,7 @@ def paste_into(folder: str) -> None:
         count = len(item.payload)
         notify.info(
             f"El portapapeles contiene {count} archivo(s).\n\n"
-            "Hiperpegado solo convierte texto e imagenes. "
+            "Hiperpaste solo convierte texto e imagenes. "
             "Usa el Pegar normal de Windows (Ctrl+V) para copiarlos aqui."
         )
         return

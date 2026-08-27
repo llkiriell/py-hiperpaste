@@ -6,18 +6,17 @@ contextual, ventana de configuracion y alta/baja en el registro.
 
 import sys
 
-from . import notify, registry
+from . import APP_NAME, notify, registry
 
-_USAGE = """Hiperpegado
+_USAGE = f"""{APP_NAME}
 
-  Hiperpegado.exe                 Inicia el icono de bandeja
-  Hiperpegado.exe --tray          Idem
-  Hiperpegado.exe --paste RUTA    Pega el portapapeles en RUTA
-  Hiperpegado.exe --config        Abre la ventana de configuracion
-  Hiperpegado.exe --register      Registra la opcion del menu contextual
-  Hiperpegado.exe --unregister    Retira la opcion del menu contextual
+  {APP_NAME}.exe                 Inicia el icono de bandeja
+  {APP_NAME}.exe --tray          Idem
+  {APP_NAME}.exe --paste RUTA    Pega el portapapeles en RUTA
+  {APP_NAME}.exe --config        Abre la ventana de configuracion
+  {APP_NAME}.exe --register      Registra la opcion del menu contextual
+  {APP_NAME}.exe --unregister    Retira la opcion del menu contextual
 """
-
 
 def main(argv=None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
