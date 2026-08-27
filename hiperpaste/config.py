@@ -20,6 +20,8 @@ DEFAULTS = {
     "name_prefix": APP_NAME,
     "start_with_windows": False,
     "language": DEFAULT_LANGUAGE,
+    # Marca de un solo uso del traspaso desde Hiperpegado (ver migrate.py).
+    "migrated_from_hiperpegado": False,
 }
 
 TEXT_FORMATS = ("txt", "md")
@@ -41,7 +43,8 @@ def _coerce(data: dict) -> dict:
     if not isinstance(data, dict):
         return cfg
 
-    for key in ("enabled", "ask_name_text", "ask_name_image", "start_with_windows"):
+    for key in ("enabled", "ask_name_text", "ask_name_image",
+                "start_with_windows", "migrated_from_hiperpegado"):
         if isinstance(data.get(key), bool):
             cfg[key] = data[key]
 

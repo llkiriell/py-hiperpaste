@@ -6,7 +6,7 @@ import win32event
 import winerror
 from PIL import Image
 
-from . import APP_NAME, __version__, config, i18n, registry, updates
+from . import APP_NAME, __version__, config, i18n, migrate, registry, updates
 from .i18n import t
 from .resources import asset_path, spawn
 
@@ -137,6 +137,13 @@ def run_tray() -> int:
         # Ya hay una bandeja activa; mostramos su configuracion y salimos.
         spawn("--config")
         return 0
+
+    # Traspaso desde Hiperpegado: adopta sus ajustes y retira sus claves,
+    # que si no dejarian una segunda entrada muerta en el menu contextual.
+    try:
+        migrate.run()
+    except OSError:
+        pass
 
     # Repara la entrada del menu si la aplicacion cambio de ubicacion, y la
     # da de alta la primera vez que cada usuario del equipo la ejecuta.
