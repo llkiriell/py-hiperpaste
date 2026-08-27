@@ -6,6 +6,10 @@ import tempfile
 
 from . import APP_NAME
 
+# Idioma fuente. Vive aqui y no en i18n para no importar en circulo:
+# i18n necesita config_dir() para localizar las traducciones del usuario.
+DEFAULT_LANGUAGE = "es"
+
 DEFAULTS = {
     "enabled": True,
     "text_format": "txt",      # "txt" | "md"
@@ -15,6 +19,7 @@ DEFAULTS = {
     "ask_name_image": False,
     "name_prefix": APP_NAME,
     "start_with_windows": False,
+    "language": DEFAULT_LANGUAGE,
 }
 
 TEXT_FORMATS = ("txt", "md")
@@ -52,6 +57,13 @@ def _coerce(data: dict) -> dict:
     prefix = data.get("name_prefix")
     if isinstance(prefix, str) and prefix.strip():
         cfg["name_prefix"] = prefix.strip()
+
+    # Se acepta cualquier codigo con forma razonable, no una lista cerrada: los
+    # idiomas se anaden dejando un .json en la carpeta del usuario, y quien
+    # decide si existe es i18n.init(), que cae al espanol si no lo encuentra.
+    language = data.get("language")
+    if isinstance(language, str) and language.strip():
+        cfg["language"] = language.strip()[:16]
 
     return cfg
 

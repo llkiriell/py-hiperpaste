@@ -3,6 +3,7 @@
 import customtkinter as ctk
 
 from .. import APP_NAME
+from ..i18n import t
 from . import theme
 
 def ask_filename(suggested: str, extension: str) -> str:
@@ -15,7 +16,7 @@ def ask_filename(suggested: str, extension: str) -> str:
     result = {"value": None}
 
     window = ctk.CTk()
-    window.title(f"{APP_NAME} \u00b7 Nombre del archivo")
+    window.title(t("rename.title", app=APP_NAME))
     window.resizable(False, False)
     theme.apply_icon(window)
 
@@ -24,7 +25,7 @@ def ask_filename(suggested: str, extension: str) -> str:
 
     ctk.CTkLabel(
         frame,
-        text="Nombre del archivo",
+        text=t("rename.heading"),
         font=ctk.CTkFont(size=15, weight="bold"),
     ).pack(anchor="w")
 
@@ -44,7 +45,7 @@ def ask_filename(suggested: str, extension: str) -> str:
 
     hint = ctk.CTkLabel(
         frame,
-        text="Los caracteres no validos se sustituiran automaticamente.",
+        text=t("rename.hint"),
         font=ctk.CTkFont(size=11),
         text_color=("gray45", "gray60"),
     )
@@ -61,12 +62,12 @@ def ask_filename(suggested: str, extension: str) -> str:
     buttons = ctk.CTkFrame(frame, fg_color="transparent")
     buttons.pack(side="bottom", fill="x", pady=(14, 0))
     ctk.CTkButton(
-        buttons, text="Cancelar", width=110, command=cancel,
+        buttons, text=t("rename.cancel"), width=110, command=cancel,
         fg_color="transparent", border_width=1,
         text_color=("gray20", "gray85"),
     ).pack(side="right")
     ctk.CTkButton(
-        buttons, text="Guardar", width=110, command=accept,
+        buttons, text=t("rename.save"), width=110, command=accept,
     ).pack(side="right", padx=(0, 8))
 
     window.bind("<Return>", accept)

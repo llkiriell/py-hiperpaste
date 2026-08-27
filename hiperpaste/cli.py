@@ -1,24 +1,24 @@
 """Despacho de la linea de comandos.
 
-Un unico ejecutable cubre los cuatro roles: bandeja, pegado desde el menu
+Un unico ejecutable cubre todos los roles: bandeja, pegado desde el menu
 contextual, ventana de configuracion y alta/baja en el registro.
 """
 
 import sys
 
-from . import APP_NAME, notify, registry
+from . import APP_NAME, config, i18n, notify, registry
+from .i18n import t
 
-_USAGE = f"""{APP_NAME}
 
-  {APP_NAME}.exe                 Inicia el icono de bandeja
-  {APP_NAME}.exe --tray          Idem
-  {APP_NAME}.exe --paste RUTA    Pega el portapapeles en RUTA
-  {APP_NAME}.exe --config        Abre la ventana de configuracion
-  {APP_NAME}.exe --register      Registra la opcion del menu contextual
-  {APP_NAME}.exe --unregister    Retira la opcion del menu contextual
-"""
+def _usage() -> str:
+    return t("cli.usage", app=APP_NAME)
+
 
 def main(argv=None) -> int:
+    # Un unico punto de carga del idioma: cubre los cinco roles del
+    # ejecutable, incluido el proceso efimero que atiende el menu contextual.
+    i18n.init(config.load()["language"])
+
     argv = list(sys.argv[1:] if argv is None else argv)
     command = argv[0] if argv else "--tray"
 
@@ -32,7 +32,8 @@ def main(argv=None) -> int:
         try:
             paste_into(folder)
         except Exception as exc:  # ultima red: nunca morir en silencio
-            notify.error(f"Error inesperado al pegar.\n\n{type(exc).__name__}: {exc}")
+            notify.error(t("paste.unexpected_error",
+                           error=f"{type(exc).__name__}: {exc}"))
             return 1
         return 0
 
@@ -50,8 +51,8 @@ def main(argv=None) -> int:
         return 0
 
     if command in ("--help", "-h", "/?"):
-        notify.info(_USAGE)
+        notify.info(_usage())
         return 0
 
-    notify.warn(f"Opcion desconocida: {command}\n\n{_USAGE}")
+    notify.warn(t("cli.unknown_option", command=command) + "\n\n" + _usage())
     return 2

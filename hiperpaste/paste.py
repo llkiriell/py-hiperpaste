@@ -6,7 +6,8 @@ from datetime import datetime
 
 from PIL import Image
 
-from . import clipboard, config, notify
+from . import APP_NAME, clipboard, config, notify
+from .i18n import t
 
 # Caracteres prohibidos en nombres de archivo de Windows, mas los de control.
 _INVALID = re.compile(r'[<>:"/\|?*\x00-\x1f]')
@@ -73,39 +74,29 @@ def paste_into(folder: str) -> None:
     cfg = config.load()
 
     if not cfg["enabled"]:
-        notify.info(
-            "Hiperpaste esta desactivado.\n\n"
-            "Activalo desde su icono en la bandeja del sistema."
-        )
+        notify.info(t("paste.disabled", app=APP_NAME))
         return
 
     if not folder or not os.path.isdir(folder):
-        notify.error("No se pudo determinar la carpeta de destino.")
+        notify.error(t("paste.no_folder"))
         return
 
     try:
         item = clipboard.read()
     except clipboard.ClipboardBusy:
-        notify.error(
-            "Otra aplicacion esta usando el portapapeles.\n\n"
-            "Espera un momento y vuelve a intentarlo."
-        )
+        notify.error(t("paste.clipboard_busy"))
         return
     except Exception as exc:
-        notify.error(f"No se pudo leer el portapapeles.\n\n{exc}")
+        notify.error(t("paste.clipboard_error", error=exc))
         return
 
     if item.kind == "empty":
-        notify.info("El portapapeles esta vacio.\n\nCopia un texto o una imagen primero.")
+        notify.info(t("paste.clipboard_empty"))
         return
 
     if item.kind == "files":
-        count = len(item.payload)
-        notify.info(
-            f"El portapapeles contiene {count} archivo(s).\n\n"
-            "Hiperpaste solo convierte texto e imagenes. "
-            "Usa el Pegar normal de Windows (Ctrl+V) para copiarlos aqui."
-        )
+        notify.info(t("paste.clipboard_files",
+                      count=len(item.payload), app=APP_NAME))
         return
 
     if item.kind == "image":
@@ -132,9 +123,6 @@ def paste_into(folder: str) -> None:
         else:
             _write_text(path, item.payload)
     except PermissionError:
-        notify.error(
-            "No tienes permiso para escribir en esta carpeta.\n\n"
-            f"{folder}"
-        )
+        notify.error(t("paste.no_permission", folder=folder))
     except OSError as exc:
-        notify.error(f"No se pudo guardar el archivo.\n\n{exc}")
+        notify.error(t("paste.write_error", error=exc))

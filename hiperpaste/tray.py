@@ -6,7 +6,8 @@ import win32event
 import winerror
 from PIL import Image
 
-from . import APP_NAME, __version__, config, registry
+from . import APP_NAME, __version__, config, i18n, registry
+from .i18n import t
 from .resources import asset_path, spawn
 
 _MUTEX_NAME = r"Global\HiperpasteTrayMutex"
@@ -32,6 +33,7 @@ class Tray:
     def __init__(self):
         self.cfg = config.load()
         self._mtime = config.mtime()
+        self._language = i18n.current()
         self._on = _load_icon("icon.ico")
         self._off = _load_icon("icon_off.ico")
         self.icon = pystray.Icon(
@@ -43,8 +45,8 @@ class Tray:
 
     # -- estado ------------------------------------------------------------
     def _tooltip(self) -> str:
-        estado = "Activado" if self.cfg["enabled"] else "Desactivado"
-        return f"{APP_NAME} \u2014 {estado}"
+        estado = t("tray.state.on" if self.cfg["enabled"] else "tray.state.off")
+        return t("tray.tooltip", app=APP_NAME, state=estado)
 
     def _sync(self) -> None:
         """Relee la configuracion si cambio en disco (p. ej. desde la ventana)."""
@@ -52,6 +54,12 @@ class Tray:
         if current != self._mtime:
             self._mtime = current
             self.cfg = config.load()
+            # El idioma se cambia desde la ventana de ajustes, que es otro
+            # proceso: al detectarlo hay que rehacer el menu, cuyas etiquetas
+            # se resolvieron al construirlo.
+            if self.cfg["language"] != self._language:
+                self._language = i18n.init(self.cfg["language"])
+                self.icon.menu = self._build_menu()
 
     def _refresh(self) -> None:
         self.icon.icon = self._on if self.cfg["enabled"] else self._off
@@ -94,15 +102,15 @@ class Tray:
             pystray.MenuItem(f"{APP_NAME} {__version__}", None, enabled=False),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem(
-                "Activado", self._toggle_enabled,
+                t("tray.enabled"), self._toggle_enabled,
                 checked=self._is_enabled, default=True,
             ),
-            pystray.MenuItem("Configuracion...", self._open_settings),
+            pystray.MenuItem(t("tray.settings"), self._open_settings),
             pystray.MenuItem(
-                "Iniciar con Windows", self._toggle_startup, checked=self._is_startup,
+                t("tray.startup"), self._toggle_startup, checked=self._is_startup,
             ),
             pystray.Menu.SEPARATOR,
-            pystray.MenuItem("Salir", self._quit),
+            pystray.MenuItem(t("tray.quit"), self._quit),
         )
 
     def run(self) -> None:

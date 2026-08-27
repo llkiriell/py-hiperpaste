@@ -24,6 +24,11 @@ def asset_path(name: str) -> str:
     return os.path.join(base_dir(), "assets", name)
 
 
+def locale_dir() -> str:
+    """Carpeta de los archivos de idioma que se distribuyen con la aplicacion."""
+    return os.path.join(base_dir(), "locales")
+
+
 def executable_path() -> str:
     """Ruta a invocar para relanzar la aplicacion.
 

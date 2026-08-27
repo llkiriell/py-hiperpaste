@@ -1,0 +1,69 @@
+{
+  "__meta__": {
+    "code": "es",
+    "name": "Espanol",
+    "author": "Hiperpaste"
+  },
+
+  "app.tagline": "Pega el portapapeles como archivo desde el menu contextual.",
+
+  "tray.state.on": "Activado",
+  "tray.state.off": "Desactivado",
+  "tray.tooltip": "{app} \u2014 {state}",
+  "tray.enabled": "Activado",
+  "tray.settings": "Configuracion...",
+  "tray.startup": "Iniciar con Windows",
+  "tray.check_updates": "Buscar actualizaciones...",
+  "tray.about": "Acerca de {app}",
+  "tray.quit": "Salir",
+
+  "settings.title": "{app} \u00b7 Configuracion",
+  "settings.section.text": "TEXTO",
+  "settings.section.image": "IMAGEN",
+  "settings.section.general": "GENERAL",
+  "settings.section.preview": "VISTA PREVIA DEL NOMBRE",
+  "settings.file_format": "Formato de archivo",
+  "settings.ask_name": "Preguntar el nombre al pegar",
+  "settings.jpg_quality": "Calidad JPG",
+  "settings.name_prefix": "Sufijo del nombre",
+  "settings.startup": "Iniciar con Windows",
+  "settings.language": "Idioma",
+  "settings.enabled": "{app} activado",
+  "settings.hint_windows11": "\u24d8  En Windows 11 la opcion aparece dentro de \"Mostrar mas opciones\"\n    del menu contextual, o pulsando Mayus + clic derecho.",
+  "settings.about": "Acerca de",
+  "settings.cancel": "Cancelar",
+  "settings.save": "Guardar",
+
+  "rename.title": "{app} \u00b7 Nombre del archivo",
+  "rename.heading": "Nombre del archivo",
+  "rename.hint": "Los caracteres no validos se sustituiran automaticamente.",
+  "rename.cancel": "Cancelar",
+  "rename.save": "Guardar",
+
+  "about.title": "{app} \u00b7 Acerca de",
+  "about.version": "Version {version}",
+  "about.license": "Licencia MIT",
+  "about.repository": "Repositorio",
+  "about.close": "Cerrar",
+
+  "updates.check": "Buscar actualizaciones",
+  "updates.checking": "Buscando actualizaciones...",
+  "updates.not_published": "Todavia no publicado en GitHub.",
+  "updates.disabled": "La comprobacion de actualizaciones estara disponible\ncuando se publique la primera version en GitHub.",
+  "updates.up_to_date": "Ya tienes la ultima version ({version}).",
+  "updates.available": "Hay una version nueva: {version}.\n\nDescargala desde:\n{url}",
+  "updates.error": "No se pudo comprobar si hay actualizaciones.\n\n{error}",
+
+  "paste.disabled": "{app} esta desactivado.\n\nActivalo desde su icono en la bandeja del sistema.",
+  "paste.no_folder": "No se pudo determinar la carpeta de destino.",
+  "paste.clipboard_busy": "Otra aplicacion esta usando el portapapeles.\n\nEspera un momento y vuelve a intentarlo.",
+  "paste.clipboard_error": "No se pudo leer el portapapeles.\n\n{error}",
+  "paste.clipboard_empty": "El portapapeles esta vacio.\n\nCopia un texto o una imagen primero.",
+  "paste.clipboard_files": "El portapapeles contiene {count} archivo(s).\n\n{app} solo convierte texto e imagenes. Usa el Pegar normal de Windows (Ctrl+V) para copiarlos aqui.",
+  "paste.no_permission": "No tienes permiso para escribir en esta carpeta.\n\n{folder}",
+  "paste.write_error": "No se pudo guardar el archivo.\n\n{error}",
+  "paste.unexpected_error": "Error inesperado al pegar.\n\n{error}",
+
+  "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
+  "cli.unknown_option": "Opcion desconocida: {command}"
+}

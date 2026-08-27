@@ -2,8 +2,10 @@
 
 import customtkinter as ctk
 
-from .. import APP_NAME, __version__, config, registry
+from .. import APP_NAME, __version__, config, i18n, registry
+from ..i18n import t
 from ..paste import timestamp_stem
+from ..resources import spawn
 from . import theme
 
 _MUTED = ("gray45", "gray60")
@@ -38,7 +40,7 @@ def open_settings() -> None:
     cfg = config.load()
 
     window = ctk.CTk()
-    window.title(f"{APP_NAME} \u00b7 Configuracion")
+    window.title(t("settings.title", app=APP_NAME))
     window.resizable(False, False)
     theme.apply_icon(window)
 
@@ -53,38 +55,38 @@ def open_settings() -> None:
     ).pack(anchor="w")
     ctk.CTkLabel(
         body,
-        text="Pega el portapapeles como archivo desde el menu contextual.",
+        text=t("app.tagline"),
         font=ctk.CTkFont(size=12),
         text_color=_MUTED,
         anchor="w",
     ).pack(anchor="w")
 
     # --- Texto -------------------------------------------------------------
-    text_frame = _section(body, "TEXTO")
+    text_frame = _section(body, t("settings.section.text"))
 
     row = _row(text_frame)
-    _label(row, "Formato de archivo")
+    _label(row, t("settings.file_format"))
     text_format = ctk.CTkSegmentedButton(row, values=[".txt", ".md"], width=150)
     text_format.set("." + cfg["text_format"])
     text_format.pack(side="right")
 
     row = _row(text_frame)
-    _label(row, "Preguntar el nombre al pegar")
+    _label(row, t("settings.ask_name"))
     ask_text = ctk.CTkSwitch(row, text="")
     ask_text.select() if cfg["ask_name_text"] else ask_text.deselect()
     ask_text.pack(side="right")
 
     # --- Imagen ------------------------------------------------------------
-    image_frame = _section(body, "IMAGEN")
+    image_frame = _section(body, t("settings.section.image"))
 
     row = _row(image_frame)
-    _label(row, "Formato de archivo")
+    _label(row, t("settings.file_format"))
     image_format = ctk.CTkSegmentedButton(row, values=[".png", ".jpg"], width=150)
     image_format.set("." + cfg["image_format"])
     image_format.pack(side="right")
 
     quality_row = ctk.CTkFrame(image_frame, fg_color="transparent")
-    _label(quality_row, "Calidad JPG")
+    _label(quality_row, t("settings.jpg_quality"))
     quality_value = ctk.CTkLabel(
         quality_row, text=str(cfg["jpg_quality"]), width=32,
         font=ctk.CTkFont(size=13, weight="bold"),
@@ -95,34 +97,44 @@ def open_settings() -> None:
     quality.pack(side="right", padx=(0, 10))
 
     ask_image_row = _row(image_frame)
-    _label(ask_image_row, "Preguntar el nombre al pegar")
+    _label(ask_image_row, t("settings.ask_name"))
     ask_image = ctk.CTkSwitch(ask_image_row, text="")
     ask_image.select() if cfg["ask_name_image"] else ask_image.deselect()
     ask_image.pack(side="right")
 
     # --- General -----------------------------------------------------------
-    general = _section(body, "GENERAL")
+    general = _section(body, t("settings.section.general"))
 
     row = _row(general)
-    _label(row, "Sufijo del nombre")
+    _label(row, t("settings.language"))
+    languages = i18n.available()
+    # El desplegable muestra el nombre del idioma y la configuracion guarda su
+    # codigo, asi que hace falta tambien el camino de vuelta.
+    codes = {name: code for code, name in languages.items()}
+    language = ctk.CTkOptionMenu(row, values=list(codes), width=150)
+    language.set(languages.get(cfg["language"], languages.get(i18n.DEFAULT_CODE, "")))
+    language.pack(side="right")
+
+    row = _row(general)
+    _label(row, t("settings.name_prefix"))
     prefix = ctk.CTkEntry(row, width=190)
     prefix.insert(0, cfg["name_prefix"])
     prefix.pack(side="right")
 
     row = _row(general)
-    _label(row, "Iniciar con Windows")
+    _label(row, t("settings.startup"))
     startup = ctk.CTkSwitch(row, text="")
     startup.select() if registry.is_run_at_startup() else startup.deselect()
     startup.pack(side="right")
 
     row = _row(general)
-    _label(row, "Hiperpaste activado")
+    _label(row, t("settings.enabled", app=APP_NAME))
     enabled = ctk.CTkSwitch(row, text="")
     enabled.select() if cfg["enabled"] else enabled.deselect()
     enabled.pack(side="right")
 
     # --- Vista previa ------------------------------------------------------
-    preview_frame = _section(body, "VISTA PREVIA DEL NOMBRE")
+    preview_frame = _section(body, t("settings.section.preview"))
     preview = ctk.CTkLabel(
         preview_frame, text="", font=ctk.CTkFont(size=12), anchor="w",
         justify="left", text_color=_MUTED,
@@ -150,8 +162,7 @@ def open_settings() -> None:
 
     ctk.CTkLabel(
         body,
-        text="\u24d8  En Windows 11 la opcion aparece dentro de \"Mostrar mas opciones\"\n"
-             "    del menu contextual, o pulsando Mayus + clic derecho.",
+        text=t("settings.hint_windows11"),
         font=ctk.CTkFont(size=11),
         text_color=_MUTED,
         justify="left",
@@ -170,8 +181,10 @@ def open_settings() -> None:
         window.destroy()
 
     def save():
+        chosen_language = codes.get(language.get(), cfg["language"])
         updated = dict(cfg)
         updated.update({
+            "language": chosen_language,
             "text_format": text_format.get().lstrip("."),
             "image_format": image_format.get().lstrip("."),
             "jpg_quality": int(quality.get()),
@@ -185,12 +198,16 @@ def open_settings() -> None:
         registry.set_run_at_startup(updated["start_with_windows"])
         registry.ensure_context_menu()
         window.destroy()
+        # Los textos ya dibujados no se retraducen en caliente, asi que la
+        # ventana se vuelve a abrir en el idioma recien elegido.
+        if chosen_language != cfg["language"]:
+            spawn("--config")
 
     ctk.CTkButton(
-        footer, text="Cancelar", width=110, command=cancel,
+        footer, text=t("settings.cancel"), width=110, command=cancel,
         fg_color="transparent", border_width=1, text_color=("gray20", "gray85"),
     ).pack(side="right")
-    ctk.CTkButton(footer, text="Guardar", width=110, command=save).pack(
+    ctk.CTkButton(footer, text=t("settings.save"), width=110, command=save).pack(
         side="right", padx=(0, 8)
     )
 

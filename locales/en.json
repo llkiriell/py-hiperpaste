@@ -1,0 +1,69 @@
+{
+  "__meta__": {
+    "code": "en",
+    "name": "English",
+    "author": "Hiperpaste"
+  },
+
+  "app.tagline": "Paste the clipboard as a file from the context menu.",
+
+  "tray.state.on": "Enabled",
+  "tray.state.off": "Disabled",
+  "tray.tooltip": "{app} \u2014 {state}",
+  "tray.enabled": "Enabled",
+  "tray.settings": "Settings...",
+  "tray.startup": "Start with Windows",
+  "tray.check_updates": "Check for updates...",
+  "tray.about": "About {app}",
+  "tray.quit": "Quit",
+
+  "settings.title": "{app} \u00b7 Settings",
+  "settings.section.text": "TEXT",
+  "settings.section.image": "IMAGE",
+  "settings.section.general": "GENERAL",
+  "settings.section.preview": "FILE NAME PREVIEW",
+  "settings.file_format": "File format",
+  "settings.ask_name": "Ask for the name when pasting",
+  "settings.jpg_quality": "JPG quality",
+  "settings.name_prefix": "Name suffix",
+  "settings.startup": "Start with Windows",
+  "settings.language": "Language",
+  "settings.enabled": "{app} enabled",
+  "settings.hint_windows11": "\u24d8  On Windows 11 the entry lives under \"Show more options\"\n    in the context menu, or press Shift + right click.",
+  "settings.about": "About",
+  "settings.cancel": "Cancel",
+  "settings.save": "Save",
+
+  "rename.title": "{app} \u00b7 File name",
+  "rename.heading": "File name",
+  "rename.hint": "Invalid characters will be replaced automatically.",
+  "rename.cancel": "Cancel",
+  "rename.save": "Save",
+
+  "about.title": "{app} \u00b7 About",
+  "about.version": "Version {version}",
+  "about.license": "MIT License",
+  "about.repository": "Repository",
+  "about.close": "Close",
+
+  "updates.check": "Check for updates",
+  "updates.checking": "Checking for updates...",
+  "updates.not_published": "Not published on GitHub yet.",
+  "updates.disabled": "Update checking will be available once the first\nrelease is published on GitHub.",
+  "updates.up_to_date": "You are on the latest version ({version}).",
+  "updates.available": "A new version is available: {version}.\n\nDownload it from:\n{url}",
+  "updates.error": "Could not check for updates.\n\n{error}",
+
+  "paste.disabled": "{app} is disabled.\n\nEnable it from its system tray icon.",
+  "paste.no_folder": "Could not determine the destination folder.",
+  "paste.clipboard_busy": "Another application is using the clipboard.\n\nWait a moment and try again.",
+  "paste.clipboard_error": "Could not read the clipboard.\n\n{error}",
+  "paste.clipboard_empty": "The clipboard is empty.\n\nCopy some text or an image first.",
+  "paste.clipboard_files": "The clipboard holds {count} file(s).\n\n{app} only converts text and images. Use the regular Windows Paste (Ctrl+V) to copy them here.",
+  "paste.no_permission": "You do not have permission to write in this folder.\n\n{folder}",
+  "paste.write_error": "Could not save the file.\n\n{error}",
+  "paste.unexpected_error": "Unexpected error while pasting.\n\n{error}",
+
+  "cli.usage": "{app}\n\n  {app}.exe                 Start the tray icon\n  {app}.exe --tray          Same as above\n  {app}.exe --paste PATH    Paste the clipboard into PATH\n  {app}.exe --config        Open the settings window\n  {app}.exe --register      Register the context menu entry\n  {app}.exe --unregister    Remove the context menu entry",
+  "cli.unknown_option": "Unknown option: {command}"
+}
