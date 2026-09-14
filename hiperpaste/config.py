@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 
-from . import APP_NAME
+from . import APP_NAME, keycombo
 
 # Idioma fuente. Vive aqui y no en i18n para no importar en circulo:
 # i18n necesita config_dir() para localizar las traducciones del usuario.
@@ -20,12 +20,17 @@ DEFAULTS = {
     "name_prefix": APP_NAME,
     "start_with_windows": False,
     "language": DEFAULT_LANGUAGE,
+    # Atajos globales (ver keycombo.py). Cadena vacia = sin atajo. El de pegar
+    # sin formato evita Ctrl+Alt+V, que es el Pegado especial de Office.
+    "hotkey_paste": "ctrl+alt+h",
+    "hotkey_plain": "ctrl+alt+shift+v",
     # Marca de un solo uso del traspaso desde Hiperpegado (ver migrate.py).
     "migrated_from_hiperpegado": False,
 }
 
 TEXT_FORMATS = ("txt", "md")
 IMAGE_FORMATS = ("png", "jpg")
+HOTKEY_KEYS = ("hotkey_paste", "hotkey_plain")
 
 
 def config_dir() -> str:
@@ -67,6 +72,13 @@ def _coerce(data: dict) -> dict:
     language = data.get("language")
     if isinstance(language, str) and language.strip():
         cfg["language"] = language.strip()[:16]
+
+    # Una combinacion invalida conserva el valor por defecto; la vacia es una
+    # eleccion legitima (atajo desactivado) y se respeta.
+    for key in HOTKEY_KEYS:
+        combo = keycombo.normalize(data.get(key))
+        if combo is not None:
+            cfg[key] = combo
 
     return cfg
 
