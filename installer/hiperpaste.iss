@@ -70,6 +70,18 @@ Filename: "{app}\{#AppExe}"; Parameters: "--unregister"; RunOnceId: "QuitarMenuC
 Type: filesandordirs; Name: "{app}"
 
 [Code]
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+begin
+  // Al actualizar, el Administrador de reinicio no logra cerrar la bandeja
+  // (pystray no atiende su peticion de cierre) y la instalacion se aborta.
+  // Se cierra aqui, antes de que intente sustituir el ejecutable.
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM {#AppExe}', '',
+       SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Result := '';
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   ResultCode: Integer;
