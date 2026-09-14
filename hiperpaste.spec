@@ -27,7 +27,9 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=datas,
-    hiddenimports=["pystray._win32", "PIL._tkinter_finder"],
+    # win32com.shell se importa desde explorer.py para localizar la carpeta
+    # del Explorador activa al pulsar el atajo.
+    hiddenimports=["pystray._win32", "PIL._tkinter_finder", "win32com.shell.shell"],
     hookspath=[],
     runtime_hooks=[],
     excludes=excludes,

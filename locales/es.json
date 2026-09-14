@@ -67,6 +67,9 @@
   "hipertools.paste_plain": "Pegar sin formato",
   "plain.no_text": "El portapapeles no contiene texto.\n\nCopia un texto primero.",
 
+  "hotkey.no_folder": "Abre una carpeta del Explorador para pegar ahi con el atajo.",
+  "hotkey.register_failed": "El atajo {combo} lo usa otra aplicacion.\nElige otro en la configuracion.",
+
   "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --paste-plain   Pega sin formato en la ventana activa\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --about         Muestra la ventana Acerca de\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
   "cli.unknown_option": "Opcion desconocida: {command}"
 }

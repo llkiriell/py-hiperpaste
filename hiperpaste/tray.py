@@ -1,4 +1,6 @@
-"""Icono de bandeja: activar/desactivar, configuracion y salida."""
+"""Icono de bandeja: activar/desactivar, configuracion, atajos y salida."""
+
+import ctypes
 
 import pystray
 import win32api
@@ -6,7 +8,8 @@ import win32event
 import winerror
 from PIL import Image
 
-from . import APP_NAME, __version__, config, i18n, migrate, registry, updates
+from . import (APP_NAME, __version__, config, explorer, hotkeys, i18n,
+               keycombo, migrate, notify, plainpaste, registry, updates)
 from .i18n import t
 from .resources import asset_path, spawn
 
@@ -41,6 +44,10 @@ class Tray:
             icon=self._on,
             title=self._tooltip(),
             menu=self._build_menu(),
+        )
+        self.hotkeys = hotkeys.HotkeyListener(
+            {"hotkey_paste": self._hotkey_paste, "hotkey_plain": self._hotkey_plain},
+            on_failure=self._hotkey_failed,
         )
 
     # -- estado ------------------------------------------------------------
@@ -101,7 +108,42 @@ class Tray:
         spawn("--about")
 
     def _quit(self, _icon=None, _item=None) -> None:
+        self.hotkeys.stop()
         self.icon.stop()
+
+    # -- atajos ------------------------------------------------------------
+    def _notify(self, message: str) -> None:
+        try:
+            self.icon.notify(message, APP_NAME)
+        except Exception:
+            pass
+
+    def _hotkey_paste(self) -> None:
+        """Pega en la carpeta de la ventana del Explorador activa."""
+        folder = explorer.folder_for_window(hotkeys.foreground_window())
+        if not folder:
+            self._notify(t("hotkey.no_folder"))
+            return
+        # Quien recibe el atajo puede traer ventanas al frente y ceder ese
+        # permiso: sin el, el dialogo de nombre se abriria detras del Explorador.
+        ctypes.windll.user32.AllowSetForegroundWindow(-1)  # ASFW_ANY
+        spawn("--paste", folder)
+
+    def _hotkey_plain(self) -> None:
+        try:
+            plainpaste.paste_plain()
+        except Exception as exc:
+            notify.error(t("paste.unexpected_error",
+                           error=f"{type(exc).__name__}: {exc}"))
+
+    def _hotkey_failed(self, combo: str) -> None:
+        self._notify(t("hotkey.register_failed", combo=keycombo.display(combo)))
+
+    def _setup(self, icon) -> None:
+        # Se arranca aqui y no antes de run(): hasta ahora el icono no existe
+        # y no podria mostrar el aviso de un atajo ocupado.
+        icon.visible = True
+        self.hotkeys.start()
 
     # -- menu --------------------------------------------------------------
     def _build_menu(self) -> pystray.Menu:
@@ -128,7 +170,7 @@ class Tray:
         )
 
     def run(self) -> None:
-        self.icon.run()
+        self.icon.run(setup=self._setup)
 
 
 def run_tray() -> int:
