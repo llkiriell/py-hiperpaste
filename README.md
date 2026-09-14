@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Versión" src="https://img.shields.io/badge/version-1.0.0-blue">
+  <img alt="Versión" src="https://img.shields.io/badge/version-1.1.0-blue">
   <img alt="Plataforma" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue">
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue">
   <img alt="Licencia" src="https://img.shields.io/badge/license-MIT-green">
@@ -27,6 +27,14 @@ nombre a mano.
 - Nombre automático con fecha y hora primero, para que ordene cronológicamente:
   `2026-08-26_14-30-05_Hiperpaste.png`
 
+Además:
+
+- **Atajo de teclado** (`Ctrl+Alt+H` por defecto) para pegar en la carpeta
+  abierta sin pasar por el menú.
+- **Hipertools › Pegar sin formato**: pega el texto del portapapeles limpio de
+  formato (HTML, RTF, enlaces, metadatos), con su propio atajo
+  (`Ctrl+Alt+Shift+V`).
+
 Incluye icono en la bandeja del sistema con activación rápida, ventana de
 configuración y soporte de idiomas (español e inglés, ampliable).
 
@@ -34,7 +42,8 @@ configuración y soporte de idiomas (español e inglés, ampliable).
 
 ## Instalación
 
-Ejecuta `HiperpasteSetup-1.0.0.exe`. El asistente pregunta si instalar **solo
+Ejecuta `HiperpasteSetup-1.1.0.exe`. Si ya tienes una versión anterior, se
+instala encima conservando tu configuración. El asistente pregunta si instalar **solo
 para ti** (sin permisos de administrador) o **para todo el equipo**.
 
 Compatible con Windows 10 y Windows 11 (64 bits). No requiere tener Python
@@ -62,6 +71,36 @@ mano es **desinstalar Hiperpegado** desde *Añadir o quitar programas*.
 El archivo se crea al instante. Si ya existe uno con ese nombre se añade un
 sufijo ` (1)`, ` (2)`… igual que hace el propio Explorador.
 
+### Atajos de teclado
+
+Funcionan en todo Windows mientras el icono de Hiperpaste esté en la bandeja, y
+se cambian desde la ventana de configuración.
+
+| Atajo por defecto | Acción |
+|---|---|
+| `Ctrl+Alt+H` | Pega con Hiperpaste en la carpeta de la ventana del Explorador activa (la pestaña visible) o en el escritorio |
+| `Ctrl+Alt+Shift+V` | Pegar sin formato en la aplicación activa |
+
+Al pulsar el botón de un atajo se abre un diálogo que captura la combinación:
+debe incluir `Ctrl` o `Alt`, avisa si otra aplicación ya la usa o si está
+asignada a la otra acción, y permite dejar la acción **sin atajo** o
+**restablecer** el valor por defecto. Con Hiperpaste desactivado, los atajos se
+liberan y llegan a la aplicación activa con normalidad.
+
+### Hipertools › Pegar sin formato
+
+Un segundo menú del clic derecho, **Hipertools**, agrupa herramientas
+adicionales; la opción **Hiperpaste** no cambia. **Pegar sin formato** no crea
+ningún archivo: deja en el portapapeles solo el texto Unicode —descartando
+HTML, RTF, enlaces y metadatos— y hace un `Ctrl+V` normal en la ventana activa.
+El portapapeles queda en texto plano, así que los siguientes `Ctrl+V` también
+pegan sin formato.
+
+Su uso natural es el atajo, desde Word, el navegador o cualquier otra
+aplicación. Desde el clic derecho del Explorador pega en el campo que tenga el
+foco (renombrar, barra de dirección); sobre la vista de archivos el Explorador
+ignora el texto, pero el portapapeles queda igualmente limpio.
+
 ## Configuración
 
 Clic derecho en el icono de la bandeja:
@@ -85,6 +124,7 @@ En la ventana de configuración:
   texto automático, o al revés.
 - **Sufijo del nombre**, la parte fija que sigue a la fecha.
 - **Iniciar con Windows** y **Hiperpaste activado**.
+- **Atajos de teclado** para pegar con Hiperpaste y para pegar sin formato.
 
 La configuración se guarda en `%APPDATA%\Hiperpaste\config.json`.
 
@@ -145,9 +185,10 @@ desarrollas.
 |---|---|
 | `Hiperpaste.exe` · `--tray` | Inicia el icono de bandeja (instancia única) |
 | `Hiperpaste.exe --paste RUTA` | Pega el portapapeles en `RUTA`. Es lo que invoca el menú contextual |
+| `Hiperpaste.exe --paste-plain` | Pega sin formato en la ventana activa. Es lo que invoca Hipertools |
 | `Hiperpaste.exe --config` | Abre la ventana de configuración |
 | `Hiperpaste.exe --about` | Abre la ventana Acerca de |
-| `Hiperpaste.exe --register` / `--unregister` | Da de alta o de baja la opción del menú |
+| `Hiperpaste.exe --register` / `--unregister` | Da de alta o de baja las entradas del menú (Hiperpaste e Hipertools) |
 
 ### Compilar
 
@@ -167,13 +208,18 @@ hiperpaste/
   cli.py          despacho de argumentos
   config.py       configuración en JSON
   i18n.py         carga de idiomas y traducción de textos
-  clipboard.py    lectura del portapapeles (PNG, DIBv5, DIB, texto, archivos)
+  clipboard.py    lectura y limpieza del portapapeles (PNG, DIB, texto, HTML)
   paste.py        nombres, colisiones y escritura de los archivos
-  registry.py     menú contextual y arranque con Windows (todo en HKCU)
+  plainpaste.py   pegar sin formato en la ventana activa
+  keycombo.py     combinaciones de teclas: validación y texto visible
+  hotkeys.py      atajos globales atendidos desde la bandeja
+  explorer.py     carpeta abierta en la ventana activa del Explorador
+  registry.py     menús contextuales y arranque con Windows (todo en HKCU)
   migrate.py      traspaso desde la instalación previa de Hiperpegado
   updates.py      comprobación de versiones contra las releases de GitHub
   tray.py         icono de bandeja
-  ui/             ventanas de configuración, Acerca de y nombre de archivo
+  ui/             ventanas de configuración, Acerca de, nombre de archivo y
+                  captura de atajos
 locales/          idiomas (es, en) y plantilla para añadir más
 tools/make_icon.py   genera assets/icon.ico, icon.png e icon_off.ico
 installer/           script de Inno Setup
@@ -201,17 +247,28 @@ borras; para forzarlo, `python tools/make_icon.py --force`.
   principal con su bucle de eventos y tkinter exige ese mismo hilo.
 - El español es el idioma fuente y actúa de respaldo: una traducción incompleta
   degrada clave a clave, nunca deja la interfaz en blanco.
+- Los atajos se registran con `RegisterHotKey` en un hilo propio de la bandeja,
+  que relee la configuración cuando cambia en disco: no hace falta reiniciar
+  tras guardar. Mientras el diálogo de captura está abierto, la bandeja suelta
+  sus atajos (señal con un mutex con nombre); si no, Windows se los entregaría a
+  ella y no se podrían reasignar.
+- Pegar sin formato espera a que se suelten `Ctrl`, `Alt` y `Shift` antes de
+  simular `Ctrl+V`: con ellos pulsados llegaría `Ctrl+Alt+Shift+V` y volvería a
+  disparar el atajo.
+- Hipertools es un menú en cascada (`SubCommands` vacío y subclave `shell`) cuya
+  etiqueta se escribe en el idioma activo y se reescribe al cambiarlo.
 
 ### Limitación conocida
 
 En una instalación **para todo el equipo**, el desinstalador se ejecuta como
 administrador y limpia la clave del menú contextual de ese usuario, pero no la
 de otros usuarios del equipo que hayan usado la aplicación. Es un residuo
-inofensivo: una clave que apunta a un ejecutable inexistente, que Windows
-ignora. Cada usuario afectado puede borrarla con:
+inofensivo: unas claves que apuntan a un ejecutable inexistente, que Windows
+ignora. Cada usuario afectado puede borrarlas con:
 
 ```
 reg delete "HKCU\Software\Classes\Directory\Background\shell\Hiperpaste" /f
+reg delete "HKCU\Software\Classes\Directory\Background\shell\Hipertools" /f
 ```
 
 ---
