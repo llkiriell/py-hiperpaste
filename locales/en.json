@@ -64,6 +64,9 @@
   "paste.write_error": "Could not save the file.\n\n{error}",
   "paste.unexpected_error": "Unexpected error while pasting.\n\n{error}",
 
-  "cli.usage": "{app}\n\n  {app}.exe                 Start the tray icon\n  {app}.exe --tray          Same as above\n  {app}.exe --paste PATH    Paste the clipboard into PATH\n  {app}.exe --config        Open the settings window\n  {app}.exe --about         Show the About window\n  {app}.exe --register      Register the context menu entry\n  {app}.exe --unregister    Remove the context menu entry",
+  "hipertools.paste_plain": "Paste as plain text",
+  "plain.no_text": "The clipboard holds no text.\n\nCopy some text first.",
+
+  "cli.usage": "{app}\n\n  {app}.exe                 Start the tray icon\n  {app}.exe --tray          Same as above\n  {app}.exe --paste PATH    Paste the clipboard into PATH\n  {app}.exe --paste-plain   Paste as plain text into the active window\n  {app}.exe --config        Open the settings window\n  {app}.exe --about         Show the About window\n  {app}.exe --register      Register the context menu entry\n  {app}.exe --unregister    Remove the context menu entry",
   "cli.unknown_option": "Unknown option: {command}"
 }

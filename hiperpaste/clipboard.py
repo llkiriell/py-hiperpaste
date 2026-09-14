@@ -1,9 +1,11 @@
 """Lectura del portapapeles de Windows."""
 
 import io
+import re
 import struct
 import time
 from dataclasses import dataclass
+from html.parser import HTMLParser
 
 import win32clipboard
 import win32con
@@ -119,6 +121,114 @@ def read() -> ClipboardItem:
                 return ClipboardItem("text", text)
 
         return ClipboardItem("empty")
+    finally:
+        try:
+            win32clipboard.CloseClipboard()
+        except Exception:
+            pass
+
+
+# Etiquetas HTML que en pantalla rompen linea; el resto se funde con el texto.
+_BLOCK_TAGS = frozenset((
+    "address", "article", "aside", "blockquote", "br", "dd", "div", "dl", "dt",
+    "footer", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "ol",
+    "p", "pre", "section", "table", "tr", "ul",
+))
+# De estas basta un salto al abrir: cerrarlas separaria cada fila con una
+# linea en blanco.
+_LINE_TAGS = frozenset(("br", "dd", "dt", "li", "tr"))
+_SKIP_TAGS = frozenset(("script", "style", "head", "title"))
+
+
+class _TextExtractor(HTMLParser):
+    """Recorre un HTML quedandose solo con el texto visible."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+        self._skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in _SKIP_TAGS:
+            self._skip += 1
+        elif tag in _BLOCK_TAGS:
+            self.parts.append("\n")
+        elif tag in ("td", "th"):
+            self.parts.append("\t")
+
+    def handle_endtag(self, tag):
+        if tag in _SKIP_TAGS:
+            self._skip = max(0, self._skip - 1)
+        elif tag in _BLOCK_TAGS and tag not in _LINE_TAGS:
+            self.parts.append("\n")
+
+    def handle_data(self, data):
+        if not self._skip:
+            self.parts.append(data)
+
+
+def _html_fragment_text(data: bytes) -> str:
+    """Texto del formato "HTML Format" del portapapeles.
+
+    Ese formato antepone una cabecera con desplazamientos en bytes UTF-8 que
+    delimitan el fragmento copiado; fuera de el hay html/body de relleno.
+    """
+    raw = data if isinstance(data, bytes) else str(data).encode("utf-8")
+    header = raw[:512].decode("ascii", errors="ignore")
+    start = re.search(r"StartFragment:(\d+)", header)
+    end = re.search(r"EndFragment:(\d+)", header)
+    if start and end:
+        raw = raw[int(start.group(1)):int(end.group(1))]
+    parser = _TextExtractor()
+    parser.feed(raw.decode("utf-8", errors="replace"))
+    parser.close()
+    # convert_charrefs ya resolvio las entidades: otro unescape convertiria
+    # un "&amp;lt;" literal en "<".
+    text = "".join(parser.parts)
+    # El HTML colapsa los espacios: se imita para no arrastrar el sangrado
+    # del codigo fuente, conservando los saltos de bloque.
+    text = re.sub(r"[ \t\r\f\v]*\n[ \t\r\f\v]*", "\n", text)
+    text = re.sub(r"[ \f\v]{2,}", " ", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip("\n")
+
+
+def read_text():
+    """Texto plano del portapapeles, o ``None`` si no hay ninguno.
+
+    Al contrario que ``read()``, el texto manda: Word o Excel publican ademas
+    una imagen del fragmento copiado, y aqui interesa solo lo escrito.
+    """
+    _open_clipboard()
+    try:
+        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+            text = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+            if text:
+                return text
+
+        html_format = win32clipboard.RegisterClipboardFormat("HTML Format")
+        if html_format and win32clipboard.IsClipboardFormatAvailable(html_format):
+            text = _html_fragment_text(win32clipboard.GetClipboardData(html_format))
+            if text:
+                return text
+
+        return None
+    finally:
+        try:
+            win32clipboard.CloseClipboard()
+        except Exception:
+            pass
+
+
+def set_text(text: str) -> None:
+    """Deja en el portapapeles unicamente ``text`` como texto Unicode.
+
+    Vaciarlo antes descarta el resto de variantes (HTML, RTF, enlaces,
+    metadatos de Office), que son las que arrastran el formato al pegar.
+    """
+    _open_clipboard()
+    try:
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32con.CF_UNICODETEXT)
     finally:
         try:
             win32clipboard.CloseClipboard()

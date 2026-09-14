@@ -1,7 +1,8 @@
 """Despacho de la linea de comandos.
 
 Un unico ejecutable cubre todos los roles: bandeja, pegado desde el menu
-contextual, ventana de configuracion, Acerca de y alta/baja en el registro.
+contextual, pegado sin formato, ventana de configuracion, Acerca de y
+alta/baja en el registro.
 """
 
 import sys
@@ -32,6 +33,16 @@ def main(argv=None) -> int:
         try:
             paste_into(folder)
         except Exception as exc:  # ultima red: nunca morir en silencio
+            notify.error(t("paste.unexpected_error",
+                           error=f"{type(exc).__name__}: {exc}"))
+            return 1
+        return 0
+
+    if command == "--paste-plain":
+        from .plainpaste import paste_plain
+        try:
+            paste_plain()
+        except Exception as exc:
             notify.error(t("paste.unexpected_error",
                            error=f"{type(exc).__name__}: {exc}"))
             return 1
