@@ -2,11 +2,12 @@
 
 import customtkinter as ctk
 
-from .. import APP_NAME, __version__, config, i18n, registry
+from .. import APP_NAME, __version__, config, i18n, keycombo, registry
 from ..i18n import t
 from ..paste import timestamp_stem
 from ..resources import spawn
 from . import theme
+from .hotkey_capture import ask_hotkey
 
 _MUTED = ("gray45", "gray60")
 
@@ -61,8 +62,19 @@ def open_settings() -> None:
         anchor="w",
     ).pack(anchor="w")
 
+    # Dos columnas: en una sola, la ventana ya no cabe en pantallas de 1080 p
+    # desde que existe la seccion de atajos.
+    columns = ctk.CTkFrame(body, fg_color="transparent")
+    columns.pack(fill="both", expand=True)
+    # uniform iguala el ancho de ambas a la mas exigente.
+    columns.grid_columnconfigure((0, 1), weight=1, uniform="settings")
+    left = ctk.CTkFrame(columns, fg_color="transparent")
+    left.grid(row=0, column=0, sticky="new")
+    right = ctk.CTkFrame(columns, fg_color="transparent")
+    right.grid(row=0, column=1, sticky="new", padx=(theme.PAD, 0))
+
     # --- Texto -------------------------------------------------------------
-    text_frame = _section(body, t("settings.section.text"))
+    text_frame = _section(left, t("settings.section.text"))
 
     row = _row(text_frame)
     _label(row, t("settings.file_format"))
@@ -77,7 +89,7 @@ def open_settings() -> None:
     ask_text.pack(side="right")
 
     # --- Imagen ------------------------------------------------------------
-    image_frame = _section(body, t("settings.section.image"))
+    image_frame = _section(left, t("settings.section.image"))
 
     row = _row(image_frame)
     _label(row, t("settings.file_format"))
@@ -103,7 +115,7 @@ def open_settings() -> None:
     ask_image.pack(side="right")
 
     # --- General -----------------------------------------------------------
-    general = _section(body, t("settings.section.general"))
+    general = _section(right, t("settings.section.general"))
 
     row = _row(general)
     _label(row, t("settings.language"))
@@ -133,8 +145,48 @@ def open_settings() -> None:
     enabled.select() if cfg["enabled"] else enabled.deselect()
     enabled.pack(side="right")
 
+    # --- Atajos de teclado -------------------------------------------------
+    shortcuts = _section(right, t("settings.section.hotkeys"))
+    hotkey_values = {key: cfg[key] for key in config.HOTKEY_KEYS}
+    hotkey_names = {
+        "hotkey_paste": t("settings.hotkey_paste", app=APP_NAME),
+        "hotkey_plain": t("settings.hotkey_plain"),
+    }
+
+    def hotkey_text(key: str) -> str:
+        combo = hotkey_values[key]
+        return keycombo.display(combo) if combo else t("settings.hotkey_none")
+
+    def change_hotkey(key: str, button) -> None:
+        # La otra accion no puede compartir combinacion: solo una la recibiria.
+        reserved = {combo: hotkey_names[other]
+                    for other, combo in hotkey_values.items()
+                    if other != key and combo}
+        chosen = ask_hotkey(window, hotkey_names[key], hotkey_values[key],
+                            config.DEFAULTS[key], reserved)
+        if chosen is not None:
+            hotkey_values[key] = chosen
+            button.configure(text=hotkey_text(key))
+
+    for key in config.HOTKEY_KEYS:
+        row = _row(shortcuts)
+        _label(row, hotkey_names[key])
+        button = ctk.CTkButton(
+            row, width=190, fg_color="transparent", border_width=1,
+            text_color=("gray20", "gray85"),
+        )
+        button.configure(text=hotkey_text(key),
+                         command=lambda k=key, b=button: change_hotkey(k, b))
+        button.pack(side="right")
+
+    ctk.CTkLabel(
+        shortcuts, text=t("settings.hotkey_hint", app=APP_NAME),
+        font=ctk.CTkFont(size=11), text_color=_MUTED, anchor="w", justify="left",
+        wraplength=380,
+    ).pack(anchor="w", padx=14, pady=(0, 9))
+
     # --- Vista previa ------------------------------------------------------
-    preview_frame = _section(body, t("settings.section.preview"))
+    preview_frame = _section(left, t("settings.section.preview"))
     preview = ctk.CTkLabel(
         preview_frame, text="", font=ctk.CTkFont(size=12), anchor="w",
         justify="left", text_color=_MUTED,
@@ -197,8 +249,12 @@ def open_settings() -> None:
             "enabled": bool(enabled.get()),
             "start_with_windows": bool(startup.get()),
         })
+        updated.update(hotkey_values)
         config.save(updated)
         registry.set_run_at_startup(updated["start_with_windows"])
+        # La etiqueta de Hipertools se escribe en el idioma activo: hay que
+        # cargar el recien elegido antes de reparar el menu contextual.
+        i18n.init(chosen_language)
         registry.ensure_context_menu()
         window.destroy()
         # Los textos ya dibujados no se retraducen en caliente, asi que la

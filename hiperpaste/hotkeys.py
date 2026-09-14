@@ -28,11 +28,45 @@ _user32.GetForegroundWindow.restype = wintypes.HWND
 _WM_QUIT = 0x0012
 _WM_TIMER = 0x0113
 _WM_HOTKEY = 0x0312
-# Cada cuanto se mira si la ventana de ajustes (otro proceso) guardo cambios.
-_RELOAD_MS = 1000
+# Cada cuanto se mira si la ventana de ajustes (otro proceso) guardo cambios
+# o esta capturando una combinacion.
+_RELOAD_MS = 250
 
 # Identificador de RegisterHotKey por clave de configuracion.
 _IDS = {"hotkey_paste": 1, "hotkey_plain": 2}
+
+# Mientras exista, la bandeja suelta sus atajos: Windows entrega un atajo
+# registrado a su dueno antes que a la ventana activa, y el modal de captura
+# no podria recibir la combinacion que se quiere reasignar.
+_CAPTURE_MUTEX = r"Local\HiperpasteHotkeyCapture"
+_SYNCHRONIZE = 0x00100000
+
+_kernel32.CreateMutexW.argtypes = (ctypes.c_void_p, wintypes.BOOL, wintypes.LPCWSTR)
+_kernel32.CreateMutexW.restype = wintypes.HANDLE
+_kernel32.OpenMutexW.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.LPCWSTR)
+_kernel32.OpenMutexW.restype = wintypes.HANDLE
+_kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+
+
+class capture_pause:
+    """Contexto que pausa los atajos de la bandeja mientras dura."""
+
+    def __enter__(self):
+        self._handle = _kernel32.CreateMutexW(None, False, _CAPTURE_MUTEX)
+        return self
+
+    def __exit__(self, *_exc):
+        if self._handle:
+            _kernel32.CloseHandle(self._handle)
+            self._handle = None
+
+
+def _capture_in_progress() -> bool:
+    handle = _kernel32.OpenMutexW(_SYNCHRONIZE, False, _CAPTURE_MUTEX)
+    if not handle:
+        return False
+    _kernel32.CloseHandle(handle)
+    return True
 
 
 def is_available(combo: str) -> bool:
@@ -70,6 +104,7 @@ class HotkeyListener:
         self._warned = set()
         self._busy = threading.Lock()
         self._mtime = None
+        self._cfg = None
 
     # -- ciclo de vida -----------------------------------------------------
     def start(self) -> None:
@@ -105,18 +140,22 @@ class HotkeyListener:
 
     def _reload(self) -> None:
         current = config.mtime()
-        if current == self._mtime:
-            return
-        self._mtime = current
-        cfg = config.load()
-        if cfg["language"] != i18n.current():
-            i18n.init(cfg["language"])
+        if current != self._mtime:
+            self._mtime = current
+            self._cfg = config.load()
+            self._warned.clear()
+            if self._cfg["language"] != i18n.current():
+                i18n.init(self._cfg["language"])
+        cfg = self._cfg
 
         # Desactivado, los atajos se sueltan para que la combinacion llegue a
         # la aplicacion activa como si Hiperpaste no existiera.
+        # Una combinacion ocupada no se reintenta hasta que cambie la
+        # configuracion: se volveria a registrar todo cuatro veces por segundo.
         wanted = {}
-        if cfg["enabled"]:
-            wanted = {key: cfg[key] for key in _IDS if cfg[key]}
+        if cfg["enabled"] and not _capture_in_progress():
+            wanted = {key: cfg[key] for key in _IDS
+                      if cfg[key] and cfg[key] not in self._warned}
         if wanted == self._registered:
             return
 
@@ -125,9 +164,10 @@ class HotkeyListener:
             mods, vk = keycombo.parse(combo)
             if _user32.RegisterHotKey(None, _IDS[key], mods | keycombo.MOD_NOREPEAT, vk):
                 self._registered[key] = combo
-            elif combo not in self._warned and self._on_failure:
+            else:
                 self._warned.add(combo)
-                self._on_failure(combo)
+                if self._on_failure:
+                    self._on_failure(combo)
 
     def _unregister_all(self) -> None:
         for key in list(self._registered):
