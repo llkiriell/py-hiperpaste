@@ -100,8 +100,7 @@
   "paste.write_error": "No se pudo guardar el archivo.\n\n{error}",
   "paste.unexpected_error": "Error inesperado al pegar.\n\n{error}",
 
-  "__seccion_hipertools__": "Menu contextual Hipertools y pegado sin formato",
-  "hipertools.paste_plain": "Pegar sin formato",
+  "__seccion_plain__": "Pegado sin formato",
   "plain.no_text": "El portapapeles no contiene texto.\n\nCopia un texto primero.",
 
   "__seccion_hotkey__": "Dialogo para capturar un atajo de teclado y avisos de la bandeja",

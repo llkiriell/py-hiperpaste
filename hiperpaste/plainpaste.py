@@ -59,7 +59,7 @@ def clean_clipboard() -> bool:
 
 
 def paste_plain() -> None:
-    """Punto de entrada de Hipertools > Pegar sin formato y de su atajo."""
+    """Punto de entrada del atajo de Pegar sin formato y de --paste-plain."""
     if not config.load()["enabled"]:
         notify.info(t("paste.disabled", app=APP_NAME))
         return

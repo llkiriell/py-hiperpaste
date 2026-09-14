@@ -252,7 +252,7 @@ def open_settings() -> None:
         updated.update(hotkey_values)
         config.save(updated)
         registry.set_run_at_startup(updated["start_with_windows"])
-        # La etiqueta de Hipertools se escribe en el idioma activo: hay que
+        # Las etiquetas de Hipertools se escriben en el idioma activo: hay que
         # cargar el recien elegido antes de reparar el menu contextual.
         i18n.init(chosen_language)
         registry.ensure_context_menu()

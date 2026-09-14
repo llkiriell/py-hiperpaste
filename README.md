@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Versión" src="https://img.shields.io/badge/version-1.1.0-blue">
+  <img alt="Versión" src="https://img.shields.io/badge/version-1.1.1-blue">
   <img alt="Plataforma" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue">
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue">
   <img alt="Licencia" src="https://img.shields.io/badge/license-MIT-green">
@@ -31,9 +31,8 @@ Además:
 
 - **Atajo de teclado** (`Ctrl+Alt+H` por defecto) para pegar en la carpeta
   abierta sin pasar por el menú.
-- **Hipertools › Pegar sin formato**: pega el texto del portapapeles limpio de
-  formato (HTML, RTF, enlaces, metadatos), con su propio atajo
-  (`Ctrl+Alt+Shift+V`).
+- **Pegar sin formato** en cualquier aplicación con `Ctrl+Alt+Shift+V`: pega
+  el texto del portapapeles limpio de formato (HTML, RTF, enlaces, metadatos).
 
 Incluye icono en la bandeja del sistema con activación rápida, ventana de
 configuración y soporte de idiomas (español e inglés, ampliable).
@@ -42,7 +41,7 @@ configuración y soporte de idiomas (español e inglés, ampliable).
 
 ## Instalación
 
-Ejecuta `HiperpasteSetup-1.1.0.exe`. Si ya tienes una versión anterior, se
+Ejecuta `HiperpasteSetup-1.1.1.exe`. Si ya tienes una versión anterior, se
 instala encima conservando tu configuración. El asistente pregunta si instalar **solo
 para ti** (sin permisos de administrador) o **para todo el equipo**.
 
@@ -87,19 +86,13 @@ asignada a la otra acción, y permite dejar la acción **sin atajo** o
 **restablecer** el valor por defecto. Con Hiperpaste desactivado, los atajos se
 liberan y llegan a la aplicación activa con normalidad.
 
-### Hipertools › Pegar sin formato
+### Pegar sin formato
 
-Un segundo menú del clic derecho, **Hipertools**, agrupa herramientas
-adicionales; la opción **Hiperpaste** no cambia. **Pegar sin formato** no crea
-ningún archivo: deja en el portapapeles solo el texto Unicode —descartando
-HTML, RTF, enlaces y metadatos— y hace un `Ctrl+V` normal en la ventana activa.
-El portapapeles queda en texto plano, así que los siguientes `Ctrl+V` también
-pegan sin formato.
-
-Su uso natural es el atajo, desde Word, el navegador o cualquier otra
-aplicación. Desde el clic derecho del Explorador pega en el campo que tenga el
-foco (renombrar, barra de dirección); sobre la vista de archivos el Explorador
-ignora el texto, pero el portapapeles queda igualmente limpio.
+Desde Word, el navegador o cualquier otra aplicación, pulsa `Ctrl+Alt+Shift+V`.
+No crea ningún archivo: deja en el portapapeles solo el texto Unicode
+—descartando HTML, RTF, enlaces y metadatos— y hace un `Ctrl+V` normal en la
+ventana activa. El portapapeles queda en texto plano, así que los siguientes
+`Ctrl+V` también pegan sin formato.
 
 ## Configuración
 
@@ -185,10 +178,10 @@ desarrollas.
 |---|---|
 | `Hiperpaste.exe` · `--tray` | Inicia el icono de bandeja (instancia única) |
 | `Hiperpaste.exe --paste RUTA` | Pega el portapapeles en `RUTA`. Es lo que invoca el menú contextual |
-| `Hiperpaste.exe --paste-plain` | Pega sin formato en la ventana activa. Es lo que invoca Hipertools |
+| `Hiperpaste.exe --paste-plain` | Pega sin formato en la ventana activa (lo mismo que su atajo) |
 | `Hiperpaste.exe --config` | Abre la ventana de configuración |
 | `Hiperpaste.exe --about` | Abre la ventana Acerca de |
-| `Hiperpaste.exe --register` / `--unregister` | Da de alta o de baja las entradas del menú (Hiperpaste e Hipertools) |
+| `Hiperpaste.exe --register` / `--unregister` | Da de alta o de baja la opción del menú |
 
 ### Compilar
 
@@ -255,20 +248,22 @@ borras; para forzarlo, `python tools/make_icon.py --force`.
 - Pegar sin formato espera a que se suelten `Ctrl`, `Alt` y `Shift` antes de
   simular `Ctrl+V`: con ellos pulsados llegaría `Ctrl+Alt+Shift+V` y volvería a
   disparar el atajo.
-- Hipertools es un menú en cascada (`SubCommands` vacío y subclave `shell`) cuya
-  etiqueta se escribe en el idioma activo y se reescribe al cambiarlo.
+- `registry.py` conserva, **oculto**, un menú en cascada **Hipertools**
+  (`SubCommands` vacío y subclave `shell`) para futuras herramientas del clic
+  derecho: se activa con `TOOLS_MENU_VISIBLE` y añadiendo opciones a
+  `_TOOLS_ITEMS`. Mientras está oculto, la bandeja retira al arrancar las claves
+  que dejó la versión 1.1.0.
 
 ### Limitación conocida
 
 En una instalación **para todo el equipo**, el desinstalador se ejecuta como
 administrador y limpia la clave del menú contextual de ese usuario, pero no la
 de otros usuarios del equipo que hayan usado la aplicación. Es un residuo
-inofensivo: unas claves que apuntan a un ejecutable inexistente, que Windows
-ignora. Cada usuario afectado puede borrarlas con:
+inofensivo: una clave que apunta a un ejecutable inexistente, que Windows
+ignora. Cada usuario afectado puede borrarla con:
 
 ```
 reg delete "HKCU\Software\Classes\Directory\Background\shell\Hiperpaste" /f
-reg delete "HKCU\Software\Classes\Directory\Background\shell\Hipertools" /f
 ```
 
 ---

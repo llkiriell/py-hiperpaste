@@ -19,10 +19,18 @@ _MENU_LABEL = APP_NAME
 # Hipertools: submenu agrupador independiente de la entrada de Hiperpaste.
 # SubCommands vacio indica al Explorador que las opciones estan en su
 # subclave shell.
+#
+# Oculto desde la 1.1.1: su unica opcion era Pegar sin formato, que actua en
+# otras aplicaciones y por eso se usa con su atajo, no desde el Explorador. Se
+# conserva para futuras herramientas: basta con anadirlas a _TOOLS_ITEMS y
+# activar TOOLS_MENU_VISIBLE. Mientras este oculto, ensure_context_menu retira
+# las claves que dejaron las versiones anteriores.
+TOOLS_MENU_VISIBLE = False
 TOOLS_LABEL = "Hipertools"
 _TOOLS_KEY = r"Software\Classes\Directory\Background\shell\Hipertools"
-_PLAIN_KEY = _TOOLS_KEY + r"\shell\PastePlain"
-_PLAIN_COMMAND_KEY = _PLAIN_KEY + r"\command"
+# (subclave, clave de traduccion de la etiqueta, argumentos de la aplicacion).
+# Las etiquetas se escriben en el idioma activo: el Explorador no traduce.
+_TOOLS_ITEMS = ()
 
 
 def _quoted_launcher() -> str:
@@ -39,14 +47,17 @@ def context_menu_command() -> str:
     return f'{_quoted_launcher()} --paste "%V"'
 
 
-def plain_paste_command() -> str:
-    return f"{_quoted_launcher()} --paste-plain"
+def _tools_enabled() -> bool:
+    return TOOLS_MENU_VISIBLE and bool(_TOOLS_ITEMS)
 
 
-def plain_paste_label() -> str:
-    # El Explorador no traduce: la etiqueta se escribe en el idioma activo y
-    # ensure_context_menu la reescribe cuando el usuario lo cambia.
-    return t("hipertools.paste_plain")
+def _tool_keys(subkey: str) -> tuple:
+    item_key = rf"{_TOOLS_KEY}\shell\{subkey}"
+    return item_key, item_key + r"\command"
+
+
+def _tool_command(args: str) -> str:
+    return f"{_quoted_launcher()} {args}"
 
 
 def startup_command() -> str:
@@ -60,15 +71,44 @@ def register_context_menu() -> None:
         winreg.SetValueEx(key, "Icon", 0, winreg.REG_SZ, icon)
     with winreg.CreateKey(winreg.HKEY_CURRENT_USER, _COMMAND_KEY) as key:
         winreg.SetValueEx(key, None, 0, winreg.REG_SZ, context_menu_command())
+    _register_tools_menu(icon)
 
+
+def _register_tools_menu(icon: str) -> None:
+    # Se rehace desde cero: asi desaparecen las opciones retiradas, o el menu
+    # entero si esta oculto.
+    _delete_tree(_TOOLS_KEY)
+    if not _tools_enabled():
+        return
     with winreg.CreateKey(winreg.HKEY_CURRENT_USER, _TOOLS_KEY) as key:
         winreg.SetValueEx(key, "MUIVerb", 0, winreg.REG_SZ, TOOLS_LABEL)
         winreg.SetValueEx(key, "SubCommands", 0, winreg.REG_SZ, "")
         winreg.SetValueEx(key, "Icon", 0, winreg.REG_SZ, icon)
-    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, _PLAIN_KEY) as key:
-        winreg.SetValueEx(key, "MUIVerb", 0, winreg.REG_SZ, plain_paste_label())
-    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, _PLAIN_COMMAND_KEY) as key:
-        winreg.SetValueEx(key, None, 0, winreg.REG_SZ, plain_paste_command())
+    for subkey, label_key, args in _TOOLS_ITEMS:
+        item_key, command_key = _tool_keys(subkey)
+        with winreg.CreateKey(winreg.HKEY_CURRENT_USER, item_key) as key:
+            winreg.SetValueEx(key, "MUIVerb", 0, winreg.REG_SZ, t(label_key))
+        with winreg.CreateKey(winreg.HKEY_CURRENT_USER, command_key) as key:
+            winreg.SetValueEx(key, None, 0, winreg.REG_SZ, _tool_command(args))
+
+
+def _tools_menu_up_to_date() -> bool:
+    if not _tools_enabled():
+        return not _key_exists(_TOOLS_KEY)
+    for subkey, label_key, args in _TOOLS_ITEMS:
+        item_key, command_key = _tool_keys(subkey)
+        if (_read_value(command_key, None) != _tool_command(args)
+                or _read_value(item_key, "MUIVerb") != t(label_key)):
+            return False
+    return True
+
+
+def _key_exists(path: str) -> bool:
+    try:
+        winreg.OpenKey(winreg.HKEY_CURRENT_USER, path).Close()
+        return True
+    except OSError:
+        return False
 
 
 def _delete_tree(path: str) -> None:
@@ -123,13 +163,12 @@ def ensure_context_menu() -> None:
 
     Se llama en cada arranque de la bandeja: recrea la clave si la aplicacion
     cambio de ubicacion y, en instalaciones para todo el equipo, la da de alta
-    en el HKCU de cada usuario la primera vez que la ejecuta. Tambien anade
-    Hipertools a las instalaciones anteriores y rehace su etiqueta si cambio
-    el idioma.
+    en el HKCU de cada usuario la primera vez que la ejecuta. Tambien pone
+    Hipertools al dia: lo retira mientras esta oculto y, visible, rehace sus
+    etiquetas si cambio el idioma.
     """
     if (_read_value(_COMMAND_KEY, None) == context_menu_command()
-            and _read_value(_PLAIN_COMMAND_KEY, None) == plain_paste_command()
-            and _read_value(_PLAIN_KEY, "MUIVerb") == plain_paste_label()):
+            and _tools_menu_up_to_date()):
         return
     register_context_menu()
 

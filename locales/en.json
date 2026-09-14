@@ -69,7 +69,6 @@
   "paste.write_error": "Could not save the file.\n\n{error}",
   "paste.unexpected_error": "Unexpected error while pasting.\n\n{error}",
 
-  "hipertools.paste_plain": "Paste as plain text",
   "plain.no_text": "The clipboard holds no text.\n\nCopy some text first.",
 
   "hotkey.title": "{app} · Keyboard shortcut",

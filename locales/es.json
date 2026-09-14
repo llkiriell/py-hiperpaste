@@ -69,7 +69,6 @@
   "paste.write_error": "No se pudo guardar el archivo.\n\n{error}",
   "paste.unexpected_error": "Error inesperado al pegar.\n\n{error}",
 
-  "hipertools.paste_plain": "Pegar sin formato",
   "plain.no_text": "El portapapeles no contiene texto.\n\nCopia un texto primero.",
 
   "hotkey.title": "{app} · Atajo de teclado",
