@@ -14,6 +14,7 @@
   <img alt="Plataforma" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue">
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue">
   <img alt="Licencia" src="https://img.shields.io/badge/license-MIT-green">
+  <a href="#coautoría"><img alt="Coautor: Claude" src="https://img.shields.io/badge/coautor-Claude-D97757?logo=claude&logoColor=white"></a>
 </p>
 
 ---
@@ -271,3 +272,12 @@ reg delete "HKCU\Software\Classes\Directory\Background\shell\Hiperpaste" /f
 ## Licencia
 
 [MIT](LICENSE)
+
+---
+
+## Coautoría
+
+> [!NOTE]
+> Hiperpaste se ha desarrollado con la ayuda de
+> [Claude](https://claude.com/claude-code) (Anthropic) como coautor. Los
+> commits no llevan la línea `Co-Authored-By`: la coautoría se reconoce aquí.
