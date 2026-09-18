@@ -14,7 +14,7 @@
   <img alt="Plataforma" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue">
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue">
   <img alt="Licencia" src="https://img.shields.io/badge/license-MIT-green">
-  <a href="#coautoría"><img alt="Coautor: Claude" src="https://img.shields.io/badge/coautor-Claude-D97757?logo=claude&logoColor=white"></a>
+  <a href="#coautoría"><img alt="Coautor: Claude" src="https://img.shields.io/badge/Claude_Code-Co--Autor-D97757?style=flat&logo=claude-code&logoColor=white&labelColor=D97757&color=555555"></a>
 </p>
 
 ---
