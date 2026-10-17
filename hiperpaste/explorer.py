@@ -31,7 +31,7 @@ def _browser_window(window) -> int:
         return 0
 
 
-def _explorer_path(hwnd: int):
+def _explorer_window(hwnd: int):
     # Con pestanas, todas las de una ventana comparten HWND: se distingue la
     # visible por su ventana de navegador. Si no se puede, vale la primera.
     matches = []
@@ -45,8 +45,14 @@ def _explorer_path(hwnd: int):
         return None
 
     tab = _active_tab(hwnd)
-    chosen = next((w for w in matches if tab and _browser_window(w) == tab),
-                  matches[0])
+    return next((w for w in matches if tab and _browser_window(w) == tab),
+                matches[0])
+
+
+def _explorer_path(hwnd: int):
+    chosen = _explorer_window(hwnd)
+    if not chosen:
+        return None
     try:
         return chosen.Document.Folder.Self.Path
     except (pythoncom.com_error, AttributeError):
@@ -76,3 +82,49 @@ def folder_for_window(hwnd: int):
         return None
 
     return path if path and os.path.isdir(path) else None
+
+
+def _desktop_selected_paths() -> list[str]:
+    try:
+        sh = win32com.client.Dispatch("Shell.Application")
+        desktop = sh.Windows().FindWindowSW(0, 0, 8, 0, 1)
+        if not desktop:
+            return []
+        sel = desktop.Document.SelectedItems()
+        return [sel.Item(i).Path for i in range(sel.Count)]
+    except Exception:
+        return []
+
+
+def _explorer_selected_paths(hwnd: int) -> list[str]:
+    chosen = _explorer_window(hwnd)
+    if not chosen:
+        return []
+    try:
+        sel = chosen.Document.SelectedItems()
+        return [sel.Item(i).Path for i in range(sel.Count)]
+    except (pythoncom.com_error, AttributeError):
+        return []
+
+
+def selected_paths_for_window(hwnd: int) -> list[str]:
+    """Rutas de los elementos seleccionados en ``hwnd``.
+
+    Vacio si no hay nada seleccionado, o si la ventana no es del Explorador
+    ni del Escritorio.
+    """
+    try:
+        cls = win32gui.GetClassName(hwnd)
+    except win32gui.error:
+        return []
+
+    pythoncom.CoInitialize()
+    try:
+        if cls in _DESKTOP_CLASSES:
+            return _desktop_selected_paths()
+        elif cls in _EXPLORER_CLASSES:
+            return _explorer_selected_paths(hwnd)
+        return []
+    finally:
+        pythoncom.CoUninitialize()
+

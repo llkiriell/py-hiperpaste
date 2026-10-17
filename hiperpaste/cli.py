@@ -48,6 +48,17 @@ def main(argv=None) -> int:
             return 1
         return 0
 
+    if command == "--copy-path":
+        from .copypath import copy_path_cli
+        target = argv[1] if len(argv) > 1 else ""
+        try:
+            copy_path_cli(target)
+        except Exception as exc:
+            notify.error(t("paste.unexpected_error",
+                           error=f"{type(exc).__name__}: {exc}"))
+            return 1
+        return 0
+
     if command in ("--config", "-c"):
         from .ui.settings import open_settings
         open_settings()

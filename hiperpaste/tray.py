@@ -46,7 +46,11 @@ class Tray:
             menu=self._build_menu(),
         )
         self.hotkeys = hotkeys.HotkeyListener(
-            {"hotkey_paste": self._hotkey_paste, "hotkey_plain": self._hotkey_plain},
+            {
+                "hotkey_paste": self._hotkey_paste,
+                "hotkey_plain": self._hotkey_plain,
+                "hotkey_copypath": self._hotkey_copypath,
+            },
             on_failure=self._hotkey_failed,
         )
 
@@ -132,6 +136,14 @@ class Tray:
     def _hotkey_plain(self) -> None:
         try:
             plainpaste.paste_plain()
+        except Exception as exc:
+            notify.error(t("paste.unexpected_error",
+                           error=f"{type(exc).__name__}: {exc}"))
+
+    def _hotkey_copypath(self) -> None:
+        try:
+            from .copypath import copy_paths_hotkey
+            copy_paths_hotkey(hotkeys.foreground_window(), notifier=self._notify)
         except Exception as exc:
             notify.error(t("paste.unexpected_error",
                            error=f"{type(exc).__name__}: {exc}"))
