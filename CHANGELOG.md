@@ -20,6 +20,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - **Nueva sección Hipertools en Ajustes**: Controles dedicados en la ventana de configuración para activar la copia múltiple y definir el límite de archivos.
 - **Iconos contextuales**: Icono oficial de Hiperpaste en el menú agrupador Hipertools y en la opción Copiar ruta.
 - **Soporte multilingüe**: Traducciones añadidas en español (`es.json`), inglés (`en.json`) y plantilla (`_plantilla.json`).
+- **Comprobación de actualizaciones activa**: Habilitada la búsqueda de actualizaciones directamente contra las releases oficiales de GitHub (`llkiriell/py-hiperpaste`) desde la ventana Acerca de y el menú de la bandeja.
 - **Despacho CLI**: Nuevo comando `Hiperpaste.exe --copy-path RUTA`.
 
 ---

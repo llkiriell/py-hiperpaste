@@ -12,12 +12,9 @@ import urllib.request
 
 from . import __version__
 
-# TODO: poner a True cuando se publique la primera release en GitHub.
-ENABLED = False
-
-# TODO: sustituir OWNER por el usuario real de GitHub al crear el repositorio.
-GITHUB_REPO = "OWNER/Hiperpaste"
-
+ENABLED = True
+GITHUB_REPO = "llkiriell/py-hiperpaste"
+REPO_URL = f"https://github.com/{GITHUB_REPO}"
 RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases"
 _LATEST_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 

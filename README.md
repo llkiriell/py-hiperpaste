@@ -147,13 +147,9 @@ La configuración se guarda en `%APPDATA%\Hiperpaste\config.json`.
 
 ## Actualizaciones
 
-> **Deshabilitado por ahora.** Hiperpaste todavía no está publicado en GitHub,
-> así que la opción se muestra en gris y no hace ninguna petición de red. Para
-> activarla al publicar la primera *release*, en `hiperpaste/updates.py`: pon
-> `ENABLED = True` y sustituye `OWNER` en `GITHUB_REPO` por el usuario real.
-
-Una vez activada, compara la versión instalada con la etiqueta de la última
-*release* publicada y, si hay una más nueva, ofrece el enlace de descarga. No
+Comprueba la versión instalada contra la etiqueta de la última *release*
+publicada en el repositorio oficial de GitHub (`llkiriell/py-hiperpaste`). Si hay
+una versión nueva, ofrece el enlace de descarga directa en el navegador. No
 descarga ni instala nada por su cuenta.
 
 ## Idiomas

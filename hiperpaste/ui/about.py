@@ -63,7 +63,7 @@ def open_about() -> None:
         text_color=_LINK, cursor="hand2",
     )
     repository.pack(pady=(2, 0))
-    repository.bind("<Button-1>", lambda _e: webbrowser.open(updates.RELEASES_URL))
+    repository.bind("<Button-1>", lambda _e: webbrowser.open(updates.REPO_URL))
 
     # --- Actualizaciones ---------------------------------------------------
     status = ctk.CTkLabel(
@@ -90,13 +90,6 @@ def open_about() -> None:
 
     button = ctk.CTkButton(body, text=t("updates.check"), width=190, command=check)
     button.pack(pady=(16, 0))
-
-    # Visible pero inerte mientras no haya releases publicadas: la opcion
-    # existe, y se explica por que no se puede usar todavia.
-    if not updates.ENABLED:
-        button.configure(state="disabled")
-        status.configure(text=t("updates.not_published"))
-
     status.pack(pady=(8, 0))
 
     # --- Cierre ------------------------------------------------------------
