@@ -23,8 +23,12 @@
   "settings.section.general": "GENERAL",
   "settings.section.preview": "VISTA PREVIA DEL NOMBRE",
   "settings.section.hotkeys": "ATAJOS DE TECLADO",
+  "settings.section.tools": "HIPERTOOLS",
   "settings.hotkey_paste": "Pegar con {app}",
   "settings.hotkey_plain": "Pegar sin formato",
+  "settings.hotkey_copypath": "Copiar ruta",
+  "settings.copypath_multi_enabled": "Copiar multiples rutas",
+  "settings.copypath_multi_limit": "Limite de archivos",
   "settings.hotkey_none": "Sin atajo",
   "settings.hotkey_hint": "Funcionan en todo Windows mientras el icono de {app} este en la bandeja.",
   "settings.file_format": "Formato de archivo",
@@ -69,6 +73,14 @@
   "paste.write_error": "No se pudo guardar el archivo.\n\n{error}",
   "paste.unexpected_error": "Error inesperado al pegar.\n\n{error}",
 
+  "hipertools.copy_path": "Copiar ruta",
+
+  "copypath.copied_single": "Ruta copiada al portapapeles.",
+  "copypath.copied_single_multi_disabled": "Ruta copiada (la copia multiple esta desactivada en Ajustes).",
+  "copypath.copied_multiple": "{count} rutas copiadas al portapapeles.",
+  "copypath.copied_limit": "Se copiaron las primeras {limit} rutas de {total} (limite alcanzado).",
+  "copypath.no_selection": "Selecciona un archivo o carpeta primero.",
+
   "plain.no_text": "El portapapeles no contiene texto.\n\nCopia un texto primero.",
 
   "hotkey.title": "{app} · Atajo de teclado",
@@ -84,6 +96,6 @@
   "hotkey.no_folder": "Abre una carpeta del Explorador para pegar ahi con el atajo.",
   "hotkey.register_failed": "El atajo {combo} lo usa otra aplicacion.\nElige otro en la configuracion.",
 
-  "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --paste-plain   Pega sin formato en la ventana activa\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --about         Muestra la ventana Acerca de\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
+  "cli.usage": "{app}\n\n  {app}.exe                 Inicia el icono de bandeja\n  {app}.exe --tray          Idem\n  {app}.exe --paste RUTA    Pega el portapapeles en RUTA\n  {app}.exe --paste-plain   Pega sin formato en la ventana activa\n  {app}.exe --copy-path RUTA Copia la ruta al portapapeles\n  {app}.exe --config        Abre la ventana de configuracion\n  {app}.exe --about         Muestra la ventana Acerca de\n  {app}.exe --register      Registra la opcion del menu contextual\n  {app}.exe --unregister    Retira la opcion del menu contextual",
   "cli.unknown_option": "Opcion desconocida: {command}"
 }

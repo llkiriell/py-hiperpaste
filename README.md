@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Versión" src="https://img.shields.io/badge/version-1.1.1-blue">
+  <img alt="Versión" src="https://img.shields.io/badge/version-1.2.0-blue">
   <img alt="Plataforma" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue">
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue">
   <img alt="Licencia" src="https://img.shields.io/badge/license-MIT-green">
@@ -30,7 +30,13 @@ nombre a mano.
 
 Además:
 
-- **Atajo de teclado** (`Ctrl+Alt+H` por defecto) para pegar en la carpeta
+- **Hipertools > Copiar ruta**: menú contextual en archivos y carpetas para
+  copiar su ruta absoluta al portapapeles.
+- **Atajo global de Copiar ruta** (`Ctrl+Alt+C` por defecto): copia las rutas de
+  los archivos seleccionados directamente sin abrir el menú contextual.
+  Permite copiar múltiples rutas como lista con saltos de línea (configurable y
+  limitado por defecto a 50 archivos).
+- **Atajo de pegado** (`Ctrl+Alt+H` por defecto) para pegar en la carpeta
   abierta sin pasar por el menú.
 - **Pegar sin formato** en cualquier aplicación con `Ctrl+Alt+Shift+V`: pega
   el texto del portapapeles limpio de formato (HTML, RTF, enlaces, metadatos).
@@ -80,12 +86,28 @@ se cambian desde la ventana de configuración.
 |---|---|
 | `Ctrl+Alt+H` | Pega con Hiperpaste en la carpeta de la ventana del Explorador activa (la pestaña visible) o en el escritorio |
 | `Ctrl+Alt+Shift+V` | Pegar sin formato en la aplicación activa |
+| `Ctrl+Alt+C` | Copia la ruta absoluta de los archivos o carpetas seleccionados |
 
 Al pulsar el botón de un atajo se abre un diálogo que captura la combinación:
 debe incluir `Ctrl` o `Alt`, avisa si otra aplicación ya la usa o si está
 asignada a la otra acción, y permite dejar la acción **sin atajo** o
 **restablecer** el valor por defecto. Con Hiperpaste desactivado, los atajos se
 liberan y llegan a la aplicación activa con normalidad.
+
+### Hipertools: Copiar ruta
+
+Permite copiar al portapapeles la ruta absoluta completa de cualquier archivo o carpeta:
+1. **Desde el menú contextual**: Clic derecho sobre el archivo o carpeta > **Hipertools** > **Copiar ruta**.
+2. **Desde el atajo**: Selecciona los archivos en el Explorador o en el Escritorio y presiona `Ctrl+Alt+C`.
+
+**Copia múltiple de rutas**:
+En la ventana de configuración puedes activar la opción **Copiar múltiples rutas** y ajustar el límite máximo de elementos (por defecto 50). Cuando selecciones varios archivos, obtendrás una lista limpia separada por saltos de línea:
+```text
+C:\ruta\al\archivo1.png
+C:\ruta\al\archivo2.png
+C:\ruta\al\archivo3.png
+```
+Si la opción está desactivada (por defecto), solo se copiará la primera ruta seleccionada. Si la selección excede el límite configurado, se copiarán las primeras rutas hasta dicho límite y se emitirá una notificación.
 
 ### Pegar sin formato
 
@@ -118,19 +140,16 @@ En la ventana de configuración:
   texto automático, o al revés.
 - **Sufijo del nombre**, la parte fija que sigue a la fecha.
 - **Iniciar con Windows** y **Hiperpaste activado**.
-- **Atajos de teclado** para pegar con Hiperpaste y para pegar sin formato.
+- **Hipertools**: activar o desactivar la copia de múltiples rutas y ajustar el límite numérico de archivos.
+- **Atajos de teclado** para pegar con Hiperpaste, pegar sin formato y copiar ruta.
 
 La configuración se guarda en `%APPDATA%\Hiperpaste\config.json`.
 
 ## Actualizaciones
 
-> **Deshabilitado por ahora.** Hiperpaste todavía no está publicado en GitHub,
-> así que la opción se muestra en gris y no hace ninguna petición de red. Para
-> activarla al publicar la primera *release*, en `hiperpaste/updates.py`: pon
-> `ENABLED = True` y sustituye `OWNER` en `GITHUB_REPO` por el usuario real.
-
-Una vez activada, compara la versión instalada con la etiqueta de la última
-*release* publicada y, si hay una más nueva, ofrece el enlace de descarga. No
+Comprueba la versión instalada contra la etiqueta de la última *release*
+publicada en el repositorio oficial de GitHub (`llkiriell/py-hiperpaste`). Si hay
+una versión nueva, ofrece el enlace de descarga directa en el navegador. No
 descarga ni instala nada por su cuenta.
 
 ## Idiomas
@@ -180,6 +199,7 @@ desarrollas.
 | `Hiperpaste.exe` · `--tray` | Inicia el icono de bandeja (instancia única) |
 | `Hiperpaste.exe --paste RUTA` | Pega el portapapeles en `RUTA`. Es lo que invoca el menú contextual |
 | `Hiperpaste.exe --paste-plain` | Pega sin formato en la ventana activa (lo mismo que su atajo) |
+| `Hiperpaste.exe --copy-path RUTA` | Copia la ruta absoluta de `RUTA` al portapapeles |
 | `Hiperpaste.exe --config` | Abre la ventana de configuración |
 | `Hiperpaste.exe --about` | Abre la ventana Acerca de |
 | `Hiperpaste.exe --register` / `--unregister` | Da de alta o de baja la opción del menú |
@@ -201,13 +221,14 @@ el ejecutable en `dist\Hiperpaste\` y avisa.
 hiperpaste/
   cli.py          despacho de argumentos
   config.py       configuración en JSON
+  copypath.py     copia de rutas de archivos (individual o múltiple)
   i18n.py         carga de idiomas y traducción de textos
   clipboard.py    lectura y limpieza del portapapeles (PNG, DIB, texto, HTML)
   paste.py        nombres, colisiones y escritura de los archivos
   plainpaste.py   pegar sin formato en la ventana activa
   keycombo.py     combinaciones de teclas: validación y texto visible
   hotkeys.py      atajos globales atendidos desde la bandeja
-  explorer.py     carpeta abierta en la ventana activa del Explorador
+  explorer.py     carpeta y selección de archivos en la ventana activa del Explorador
   registry.py     menús contextuales y arranque con Windows (todo en HKCU)
   migrate.py      traspaso desde la instalación previa de Hiperpegado
   updates.py      comprobación de versiones contra las releases de GitHub
@@ -225,14 +246,16 @@ borras; para forzarlo, `python tools/make_icon.py --force`.
 
 ### Detalles de implementación
 
-- El proceso de pegado **no depende de la bandeja**: lee la configuración por su
-  cuenta, así que el menú contextual sigue funcionando aunque hayas cerrado la
-  aplicación.
-- El menú se registra con el token `%V` bajo `Directory\Background\shell`, que es
-  el que entrega la carpeta abierta (`%1` no funciona en esa clave).
-- La bandeja **repara** la entrada del registro en cada arranque, de modo que
-  sobrevive a mover la aplicación de sitio y, en instalaciones para todo el
-  equipo, se da de alta para cada usuario la primera vez que la ejecuta.
+- El proceso de pegado y copia de rutas **no dependen de la bandeja**: leen la
+  configuración por su cuenta, así que el menú contextual sigue funcionando
+  aunque hayas cerrado la aplicación.
+- El menú principal de pegado se registra con el token `%V` bajo
+  `Directory\Background\shell`, que es el que entrega la carpeta abierta.
+- **Hipertools** se registra en `*\shell\Hipertools` para archivos y en
+  `Directory\shell\Hipertools` para carpetas, con submenú en cascada e iconos.
+- La bandeja **repara** las entradas del registro en cada arranque, de modo que
+  sobreviven a mover la aplicación de sitio y, en instalaciones para todo el
+  equipo, se dan de alta para cada usuario la primera vez que la ejecuta.
 - El texto se guarda en UTF-8 **con BOM** y saltos CRLF: sin ello, el Bloc de
   notas de Windows 10 muestra los acentos corruptos y el texto en una sola línea.
 - Al convertir a JPG una imagen con transparencia, se compone sobre fondo blanco

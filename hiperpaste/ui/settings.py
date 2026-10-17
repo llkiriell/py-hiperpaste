@@ -151,6 +151,7 @@ def open_settings() -> None:
     hotkey_names = {
         "hotkey_paste": t("settings.hotkey_paste", app=APP_NAME),
         "hotkey_plain": t("settings.hotkey_plain"),
+        "hotkey_copypath": t("settings.hotkey_copypath"),
     }
 
     def hotkey_text(key: str) -> str:
@@ -184,6 +185,21 @@ def open_settings() -> None:
         font=ctk.CTkFont(size=11), text_color=_MUTED, anchor="w", justify="left",
         wraplength=380,
     ).pack(anchor="w", padx=14, pady=(0, 9))
+
+    # --- Hipertools --------------------------------------------------------
+    tools_frame = _section(left, t("settings.section.tools"))
+
+    row = _row(tools_frame)
+    _label(row, t("settings.copypath_multi_enabled"))
+    multi_copy_switch = ctk.CTkSwitch(row, text="")
+    multi_copy_switch.select() if cfg.get("copypath_multi_enabled", False) else multi_copy_switch.deselect()
+    multi_copy_switch.pack(side="right")
+
+    row = _row(tools_frame)
+    _label(row, t("settings.copypath_multi_limit"))
+    limit_entry = ctk.CTkEntry(row, width=70)
+    limit_entry.insert(0, str(cfg.get("copypath_multi_limit", 50)))
+    limit_entry.pack(side="right")
 
     # --- Vista previa ------------------------------------------------------
     preview_frame = _section(left, t("settings.section.preview"))
@@ -237,6 +253,12 @@ def open_settings() -> None:
 
     def save():
         chosen_language = codes.get(language.get(), cfg["language"])
+        try:
+            limit_val = int(limit_entry.get().strip())
+        except (ValueError, TypeError):
+            limit_val = 50
+        limit_val = max(1, min(500, limit_val))
+
         updated = dict(cfg)
         updated.update({
             "language": chosen_language,
@@ -248,6 +270,8 @@ def open_settings() -> None:
             "name_prefix": prefix.get().strip() or APP_NAME,
             "enabled": bool(enabled.get()),
             "start_with_windows": bool(startup.get()),
+            "copypath_multi_enabled": bool(multi_copy_switch.get()),
+            "copypath_multi_limit": limit_val,
         })
         updated.update(hotkey_values)
         config.save(updated)

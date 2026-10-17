@@ -33,7 +33,7 @@ _WM_HOTKEY = 0x0312
 _RELOAD_MS = 250
 
 # Identificador de RegisterHotKey por clave de configuracion.
-_IDS = {"hotkey_paste": 1, "hotkey_plain": 2}
+_IDS = {"hotkey_paste": 1, "hotkey_plain": 2, "hotkey_copypath": 3}
 
 # Mientras exista, la bandeja suelta sus atajos: Windows entrega un atajo
 # registrado a su dueno antes que a la ventana activa, y el modal de captura

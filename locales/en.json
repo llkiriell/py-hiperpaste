@@ -23,8 +23,12 @@
   "settings.section.general": "GENERAL",
   "settings.section.preview": "FILE NAME PREVIEW",
   "settings.section.hotkeys": "KEYBOARD SHORTCUTS",
+  "settings.section.tools": "HIPERTOOLS",
   "settings.hotkey_paste": "Paste with {app}",
   "settings.hotkey_plain": "Paste as plain text",
+  "settings.hotkey_copypath": "Copy path",
+  "settings.copypath_multi_enabled": "Copy multiple paths",
+  "settings.copypath_multi_limit": "File limit",
   "settings.hotkey_none": "No shortcut",
   "settings.hotkey_hint": "They work across Windows while the {app} icon is in the tray.",
   "settings.file_format": "File format",
@@ -69,6 +73,14 @@
   "paste.write_error": "Could not save the file.\n\n{error}",
   "paste.unexpected_error": "Unexpected error while pasting.\n\n{error}",
 
+  "hipertools.copy_path": "Copy path",
+
+  "copypath.copied_single": "Path copied to clipboard.",
+  "copypath.copied_single_multi_disabled": "Path copied (multiple paths copy is disabled in Settings).",
+  "copypath.copied_multiple": "{count} paths copied to clipboard.",
+  "copypath.copied_limit": "Copied first {limit} paths of {total} (limit reached).",
+  "copypath.no_selection": "Select a file or folder first.",
+
   "plain.no_text": "The clipboard holds no text.\n\nCopy some text first.",
 
   "hotkey.title": "{app} · Keyboard shortcut",
@@ -84,6 +96,6 @@
   "hotkey.no_folder": "Open a folder in File Explorer to paste there with the shortcut.",
   "hotkey.register_failed": "The shortcut {combo} is used by another application.\nPick a different one in the settings.",
 
-  "cli.usage": "{app}\n\n  {app}.exe                 Start the tray icon\n  {app}.exe --tray          Same as above\n  {app}.exe --paste PATH    Paste the clipboard into PATH\n  {app}.exe --paste-plain   Paste as plain text into the active window\n  {app}.exe --config        Open the settings window\n  {app}.exe --about         Show the About window\n  {app}.exe --register      Register the context menu entry\n  {app}.exe --unregister    Remove the context menu entry",
+  "cli.usage": "{app}\n\n  {app}.exe                 Start the tray icon\n  {app}.exe --tray          Same as above\n  {app}.exe --paste PATH    Paste the clipboard into PATH\n  {app}.exe --paste-plain   Paste as plain text into the active window\n  {app}.exe --copy-path PATH Copy path to clipboard\n  {app}.exe --config        Open the settings window\n  {app}.exe --about         Show the About window\n  {app}.exe --register      Register the context menu entry\n  {app}.exe --unregister    Remove the context menu entry",
   "cli.unknown_option": "Unknown option: {command}"
 }

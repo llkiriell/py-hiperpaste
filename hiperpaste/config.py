@@ -1,4 +1,4 @@
-"""Configuracion persistente en %APPDATA%\Hiperpaste\config.json."""
+r"""Configuracion persistente en %APPDATA%\Hiperpaste\config.json."""
 
 import json
 import os
@@ -24,13 +24,17 @@ DEFAULTS = {
     # sin formato evita Ctrl+Alt+V, que es el Pegado especial de Office.
     "hotkey_paste": "ctrl+alt+h",
     "hotkey_plain": "ctrl+alt+shift+v",
+    "hotkey_copypath": "ctrl+alt+c",
+    # Copia de multiples rutas (Hipertools > Copiar ruta)
+    "copypath_multi_enabled": False,
+    "copypath_multi_limit": 50,
     # Marca de un solo uso del traspaso desde Hiperpegado (ver migrate.py).
     "migrated_from_hiperpegado": False,
 }
 
 TEXT_FORMATS = ("txt", "md")
 IMAGE_FORMATS = ("png", "jpg")
-HOTKEY_KEYS = ("hotkey_paste", "hotkey_plain")
+HOTKEY_KEYS = ("hotkey_paste", "hotkey_plain", "hotkey_copypath")
 
 
 def config_dir() -> str:
@@ -49,9 +53,14 @@ def _coerce(data: dict) -> dict:
         return cfg
 
     for key in ("enabled", "ask_name_text", "ask_name_image",
-                "start_with_windows", "migrated_from_hiperpegado"):
+                "start_with_windows", "migrated_from_hiperpegado",
+                "copypath_multi_enabled"):
         if isinstance(data.get(key), bool):
             cfg[key] = data[key]
+
+    limit = data.get("copypath_multi_limit")
+    if isinstance(limit, (int, float)):
+        cfg["copypath_multi_limit"] = max(1, min(500, int(limit)))
 
     if data.get("text_format") in TEXT_FORMATS:
         cfg["text_format"] = data["text_format"]
